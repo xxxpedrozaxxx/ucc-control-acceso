@@ -1,0 +1,11 @@
+id_institucional,documento_identidad,nombre_completo,correo_institucional,rol,programa_academico,facultad,semestre,dependencia,cargo,empresa_proveedora,nit_proveedor,area_asignada,sede
+80123456,1001234567,Juan Pérez Gómez,juan.perez@ucc.edu.co,Estudiante,Ingeniería de Sistemas,Facultad de Ingeniería,8,,,,,Bogotá
+80234567,1001234568,María López Rodríguez,maria.lopez@ucc.edu.co,Estudiante,Derecho,Facultad de Derecho,6,,,,,Bogotá
+80345678,1001234569,Carlos Martínez Sánchez,carlos.martinez@ucc.edu.co,Estudiante|Empleado,Administración de Empresas,Facultad de Ciencias Económicas,10,Biblioteca,Auxiliar de Biblioteca,,,Bogotá
+80456789,1001234570,Ana Rodríguez Torres,ana.rodriguez@ucc.edu.co,Estudiante,Psicología,Facultad de Ciencias Sociales,4,,,,,Bogotá
+80567890,1001234571,Luis Gómez Castro,luis.gomez@ucc.edu.co,Empleado,,,Tesorería,Coordinador de Caja,,,Bogotá
+80678901,1001234572,Sandra Morales Díaz,sandra.morales@ucc.edu.co,Contratista,,,,,Sistemas Avanzados SAS,900123456,Soporte Técnico,Bogotá
+80789012,1001234573,Pedro Ramírez Ortiz,pedro.ramirez@ucc.edu.co,Estudiante,Ingeniería Industrial,Facultad de Ingeniería,5,,,,,Bogotá
+80890123,1001234574,Laura Hernández Vega,laura.hernandez@ucc.edu.co,Estudiante,Contaduría Pública,Facultad de Ciencias Económicas,3,,,,,Bogotá
+80901234,1001234575,Jorge Silva Peña,jorge.silva@ucc.edu.co,Empleado,,,Admisiones y Registro,Director de Admisiones,,,Bogotá
+81012345,1001234576,Patricia Vargas León,patricia.vargas@ucc.edu.co,Estudiante,Medicina,Facultad de Medicina,7,,,,,Bogotá
