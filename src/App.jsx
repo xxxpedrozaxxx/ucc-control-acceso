@@ -3,15 +3,15 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { LoginPage }       from './modules/login/presentation/pages/LoginPage';
 import { UserProfilePage } from './modules/user-profile/presentation/pages/UserProfilePage';
 import { AdminPage }       from './modules/admin/presentation/pages/AdminPage';
-import { ProtectedRoute }  from './shared/components/ProtectedRoute';
+import { AdminLoginPage }  from './modules/admin/presentation/pages/AdminLoginPage';
+import { ProtectedRoute, AdminProtectedRoute } from './shared/components/ProtectedRoute';
 
 function App() {
   return (
     <Router>
       <Routes>
+        {/* Portal usuarios */}
         <Route path="/login" element={<LoginPage />} />
-
-        {/* Ruta protegida: redirige al login si no hay usuario autenticado */}
         <Route
           path="/user-profile"
           element={
@@ -21,8 +21,16 @@ function App() {
           }
         />
 
-        {/* Panel de administración (acceso temporal por ruta directa) */}
-        <Route path="/admin" element={<AdminPage />} />
+        {/* Panel admin */}
+        <Route path="/admin-login" element={<AdminLoginPage />} />
+        <Route
+          path="/admin"
+          element={
+            <AdminProtectedRoute>
+              <AdminPage />
+            </AdminProtectedRoute>
+          }
+        />
 
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>

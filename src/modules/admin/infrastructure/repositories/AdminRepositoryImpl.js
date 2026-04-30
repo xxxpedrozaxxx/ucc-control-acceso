@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import { supabase } from '../../../../shared/lib/supabaseClient';
 
 /**
@@ -7,28 +8,41 @@ export class AdminRepositoryImpl {
 
   // ─── Estadísticas generales ────────────────────────────────────────────────
   async getStats() {
-    // Obtener id del rol 'estudiante'
-    const { data: rolData } = await supabase
+    // Obtener ids de roles
+    const { data: rolesData } = await supabase
       .from('roles')
-      .select('id')
-      .eq('nombre_rol', 'Estudiante')
-      .single();
+      .select('id, nombre_rol');
 
-    const rolEstudianteId = rolData?.id;
+    const rolId = (nombre) => rolesData?.find(r => r.nombre_rol === nombre)?.id;
 
     const [
       { count: totalEstudiantes },
+      { count: totalEmpleados },
+      { count: totalContratistas },
       { count: activos },
       { count: bloqueados },
       { count: reportesHoy },
+      { count: totalFallas },
     ] = await Promise.all([
       // Total estudiantes
       supabase
         .from('usuario_roles')
         .select('*', { count: 'exact', head: true })
-        .eq('rol_id', rolEstudianteId),
+        .eq('rol_id', rolId('Estudiante')),
 
-      // Activos (todos los usuarios)
+      // Total empleados
+      supabase
+        .from('usuario_roles')
+        .select('*', { count: 'exact', head: true })
+        .eq('rol_id', rolId('Empleado')),
+
+      // Total contratistas
+      supabase
+        .from('usuario_roles')
+        .select('*', { count: 'exact', head: true })
+        .eq('rol_id', rolId('Contratista')),
+
+      // Activos
       supabase
         .from('usuarios')
         .select('*', { count: 'exact', head: true })
@@ -40,19 +54,27 @@ export class AdminRepositoryImpl {
         .select('*', { count: 'exact', head: true })
         .eq('acceso', 'bloqueado'),
 
-      // Reportes TIC hoy
+      // Reportes TIP hoy
       supabase
         .from('fallas')
         .select('*', { count: 'exact', head: true })
         .gte('fecha_hora', new Date(new Date().setHours(0, 0, 0, 0)).toISOString())
         .lte('fecha_hora', new Date(new Date().setHours(23, 59, 59, 999)).toISOString()),
+
+      // Total fallas del semestre
+      supabase
+        .from('fallas')
+        .select('*', { count: 'exact', head: true }),
     ]);
 
     return {
-      totalEstudiantes: totalEstudiantes ?? 0,
-      activos:          activos          ?? 0,
-      bloqueados:       bloqueados       ?? 0,
-      reportesHoy:      reportesHoy      ?? 0,
+      totalEstudiantes:  totalEstudiantes  ?? 0,
+      totalEmpleados:    totalEmpleados    ?? 0,
+      totalContratistas: totalContratistas ?? 0,
+      activos:           activos           ?? 0,
+      bloqueados:        bloqueados        ?? 0,
+      reportesHoy:       reportesHoy       ?? 0,
+      totalFallas:       totalFallas       ?? 0,
     };
   }
 
@@ -216,6 +238,21 @@ export class AdminRepositoryImpl {
       acceso:              'activo',
       total_fallas:        0,
     }));
+
+    // Antes del upsert, eliminar filas que comparten documento_identidad con el
+    // nuevo lote pero tienen un id_institucional diferente (datos obsoletos o
+    // admins que aún estén en usuarios si la migración de independencia no corrió).
+    const docs = data.map(r => r.documento_identidad).filter(Boolean);
+    const ids  = data.map(r => r.id_institucional);
+    if (docs.length > 0) {
+      const { error: errDel } = await supabase
+        .from('usuarios')
+        .delete()
+        .in('documento_identidad', docs)
+        .not('id_institucional', 'in', `(${ids.join(',')})`);
+      if (errDel) throw new Error(`Error limpiando conflictos de documento: ${errDel.message}`);
+    }
+
     const { error } = await supabase
       .from('usuarios')
       .upsert(data, { onConflict: 'id_institucional' });
@@ -501,10 +538,17 @@ export class AdminRepositoryImpl {
   /**
    * 1. Desactiva el semestre anterior.
    * 2. Inserta el nuevo semestre como activo.
-   * 3. Elimina todos los datos del semestre anterior en orden correcto de FK:
-   *    fallas → info_* → usuario_roles → usuarios
+   * 3. Elimina todos los datos del semestre anterior en orden correcto de FK,
+   *    EXCEPTO los usuarios que son administradores (son permanentes).
    */
   async iniciarNuevoSemestre(nombre, fechaInicio, fechaFin) {
+    // Paso 0: obtener IDs de todos los admins para preservarlos
+    const { data: adminRows, error: errAdmins } = await supabase
+      .from('admins')
+      .select('id_institucional');
+    if (errAdmins) throw new Error(`Error obteniendo admins: ${errAdmins.message}`);
+    const adminIds = (adminRows || []).map(a => a.id_institucional);
+
     // Paso 1: desactivar semestre anterior
     await supabase
       .from('semestres')
@@ -520,27 +564,87 @@ export class AdminRepositoryImpl {
     if (errSem) throw new Error(`Error al crear semestre: ${errSem.message}`);
 
     // Paso 3: limpiar datos del semestre anterior
-    // Las FK exigen este orden: fallas → info_* → usuario_roles → usuarios
-    const borrar = (tabla, col) =>
-      supabase.from(tabla).delete().not(col, 'is', null);
-
-    const { error: e1 } = await borrar('fallas', 'id');
+    // Las fallas se borran para TODOS (los admins también reinician su contador)
+    const { error: e1 } = await supabase.from('fallas').delete().not('id', 'is', null);
     if (e1) throw new Error(`Error borrando fallas: ${e1.message}`);
 
+    // Helper: borra todo EXCEPTO los admins
+    const borrarExcAdmins = (tabla) => {
+      let q = supabase.from(tabla).delete();
+      if (adminIds.length === 0) return q.not('id_institucional', 'is', null);
+      // Supabase PostgREST: NOT IN (id1,id2,...)
+      return q.not('id_institucional', 'in', `(${adminIds.join(',')})`);
+    };
+
     const [r2, r3, r4] = await Promise.all([
-      borrar('info_estudiante',  'id_institucional'),
-      borrar('info_empleado',    'id_institucional'),
-      borrar('info_contratista', 'id_institucional'),
+      borrarExcAdmins('info_estudiante'),
+      borrarExcAdmins('info_empleado'),
+      borrarExcAdmins('info_contratista'),
     ]);
     const errInfo = r2.error || r3.error || r4.error;
     if (errInfo) throw new Error(`Error borrando info de roles: ${errInfo.message}`);
 
-    const { error: e5 } = await borrar('usuario_roles', 'id_institucional');
+    const { error: e5 } = await borrarExcAdmins('usuario_roles');
     if (e5) throw new Error(`Error borrando usuario_roles: ${e5.message}`);
 
-    const { error: e6 } = await borrar('usuarios', 'id');
+    const { error: e6 } = await borrarExcAdmins('usuarios');
     if (e6) throw new Error(`Error borrando usuarios: ${e6.message}`);
 
     return nuevoSem;
+  }
+
+  // ─── Listar administradores ────────────────────────────────────────────────
+  async getAdmins() {
+    const { data, error } = await supabase
+      .from('admins')
+      .select('id_institucional, nombre_completo, nivel, creado_en, ultimo_ingreso')
+      .order('nivel',     { ascending: false })  // superadmin primero
+      .order('creado_en', { ascending: true });
+    if (error) throw new Error(error.message);
+    return (data || []).map(a => ({
+      id_institucional: a.id_institucional,
+      nombre_completo:  a.nombre_completo ?? '—',
+      nivel:            a.nivel,
+      creado_en:        a.creado_en,
+      ultimo_ingreso:   a.ultimo_ingreso,
+    }));
+  }
+
+  // ─── Crear administrador ───────────────────────────────────────────────────
+  /**
+   * Crea un admin independiente de la tabla usuarios.
+   * Solo el superadmin puede llamar esto.
+   */
+  async crearAdmin(id_institucional, nombre_completo, nivel, contrasena) {
+    const hash = await bcrypt.hash(contrasena, 12);
+    const { error } = await supabase
+      .from('admins')
+      .insert({ id_institucional, nombre_completo, contrasena_hash: hash, nivel });
+    if (error) {
+      if (error.code === '23505') throw new Error('Este ID ya tiene perfil de administrador.');
+      throw new Error(error.message);
+    }
+  }
+
+  // ─── Eliminar administrador ────────────────────────────────────────────────
+  /**
+   * Los superadmins no se pueden eliminar desde el panel.
+   */
+  async eliminarAdmin(id_institucional) {
+    const { data: adminRow, error: errCheck } = await supabase
+      .from('admins')
+      .select('nivel')
+      .eq('id_institucional', id_institucional)
+      .single();
+    if (errCheck || !adminRow) throw new Error('Administrador no encontrado.');
+    if (adminRow.nivel === 'superadmin') {
+      throw new Error('Los superadmin no pueden eliminarse desde el panel.');
+    }
+
+    const { error } = await supabase
+      .from('admins')
+      .delete()
+      .eq('id_institucional', id_institucional);
+    if (error) throw new Error(error.message);
   }
 }

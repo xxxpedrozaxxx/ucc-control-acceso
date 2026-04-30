@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 
 /**
  * Modal de confirmación para bloquear o desbloquear un usuario.
@@ -23,7 +23,7 @@ export const AccesoModal = ({ usuario, onConfirmar, onCerrar }) => {
 
   const color = esBloqueando
     ? { bg: 'bg-red-600',   ring: 'ring-red-100',   btn: 'bg-red-600 hover:bg-red-700',   iconBg: 'bg-red-100'  }
-    : { bg: 'bg-green-700', ring: 'ring-green-100',  btn: 'bg-green-700 hover:bg-green-800', iconBg: 'bg-green-100' };
+    : { bg: 'bg-ucc-green', ring: 'ring-green-100',  btn: 'bg-ucc-green hover:bg-ucc-green-dark', iconBg: 'bg-green-100' };
 
   const handleConfirmar = async () => {
     setCargando(true);

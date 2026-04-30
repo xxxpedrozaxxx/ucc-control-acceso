@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Cell,
@@ -150,7 +150,7 @@ const PERIODOS = [
  * - periodo: string (diario|semanal|mensual|semestral)
  * - onCambiarPeriodo: (periodo) => void
  */
-export const ReportesView = ({ reporte, loading, periodo = 'semanal', offset = 0, onCambiarPeriodo }) => {
+export const ReportesView = ({ reporte, loading, periodo = 'semanal', offset = 0, onCambiarPeriodo, onRefrescar }) => {
   const { etiqueta: etiquetaLocal } = useMemo(() => calcularPeriodo(periodo, offset), [periodo, offset]);
   const etiqueta = reporte?.rangoEtiqueta ?? etiquetaLocal;
   const [exportando, setExportando] = useState(false);
@@ -268,7 +268,7 @@ export const ReportesView = ({ reporte, loading, periodo = 'semanal', offset = 0
                 onClick={() => onCambiarPeriodo?.(p.id, 0)}
                 className={`px-5 py-4 text-sm font-medium border-b-2 -mb-px transition-colors
                   ${periodo === p.id
-                    ? 'border-green-700 text-green-700'
+                    ? 'border-ucc-green text-ucc-green'
                     : 'border-transparent text-gray-400 hover:text-gray-600'}`}
               >
                 {p.label}
@@ -308,9 +308,19 @@ export const ReportesView = ({ reporte, loading, periodo = 'semanal', offset = 0
               <span className="text-xs text-gray-400 capitalize">{loading ? '...' : etiqueta}</span>
             )}
             <button
+              onClick={onRefrescar}
+              disabled={loading}
+              title="Actualizar informe"
+              className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-40"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+              </svg>
+            </button>
+            <button
               onClick={exportarExcel}
               disabled={!reporte || loading || exportando}
-              className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-green-700 text-green-700 hover:bg-green-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-ucc-green text-ucc-green hover:bg-green-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { AccesoModal } from '../AccesoModal';
 
 const BADGE_ESTADO = {
-  activo:    'bg-green-100 text-green-700',
+  activo:    'bg-green-100 text-ucc-green',
   bloqueado: 'bg-red-100 text-red-600',
 };
 
@@ -15,7 +15,7 @@ const BADGE_ROL = {
 /**
  * Vista de listado completo de usuarios con buscador y filtros.
  */
-export const UsuariosView = ({ usuarios, loading, onToggleAcceso }) => {
+export const UsuariosView = ({ usuarios, loading, onToggleAcceso, onRefrescar }) => {
   const [busqueda,      setBusqueda]      = useState('');
   const [filtroAcceso,  setFiltroAcceso]  = useState('todos');
   const [modalUsuario,  setModalUsuario]  = useState(null); // usuario seleccionado para modal
@@ -77,7 +77,7 @@ export const UsuariosView = ({ usuarios, loading, onToggleAcceso }) => {
               onClick={() => setFiltroAcceso(op)}
               className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${
                 filtroAcceso === op
-                  ? 'bg-green-700 text-white'
+                  ? 'bg-ucc-green text-white'
                   : 'text-gray-500 hover:bg-gray-50'
               }`}
             >
@@ -85,6 +85,17 @@ export const UsuariosView = ({ usuarios, loading, onToggleAcceso }) => {
             </button>
           ))}
         </div>
+        {/* Botón actualizar */}
+        <button
+          onClick={onRefrescar}
+          disabled={loading}
+          title="Actualizar lista"
+          className="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-40 shadow-sm flex-shrink-0"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+          </svg>
+        </button>
       </div>
 
       {/* Tabla */}
@@ -182,7 +193,7 @@ export const UsuariosView = ({ usuarios, loading, onToggleAcceso }) => {
                       ) : (
                         <button
                           onClick={() => setModalUsuario(u)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-green-200 text-green-700 text-xs font-medium hover:bg-green-50 transition-colors"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-green-200 text-ucc-green text-xs font-medium hover:bg-green-50 transition-colors"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-3.5 h-3.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />

@@ -7,7 +7,7 @@ const repo = new AdminRepositoryImpl();
  * Hook para los informes por período (diario/semanal/mensual/semestral).
  * Se recarga automáticamente cada vez que cambia el período.
  */
-export const useReporte = (periodo = 'semanal', offset = 0) => {
+export const useReporte = (periodo = 'semanal', offset = 0, refreshKey = 0) => {
   const [reporte,  setReporte]  = useState(null);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState(null);
@@ -23,7 +23,7 @@ export const useReporte = (periodo = 'semanal', offset = 0) => {
       .finally(()  => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
-  }, [periodo, offset]);
+  }, [periodo, offset, refreshKey]);
 
   return { reporte, loading, error };
 };

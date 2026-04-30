@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 
 /**
  * Modal de dos pasos para iniciar un nuevo semestre:
@@ -39,7 +39,7 @@ export const NuevoSemestreModal = ({ visible, onCerrar, onConfirmar, cargando, e
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
 
         {/* ── Encabezado ── */}
-        <div className="bg-[#1B4332] px-6 py-5">
+        <div className="bg-ucc-green px-6 py-5">
           <h2 className="text-white font-bold text-lg">Iniciar nuevo semestre</h2>
           <p className="text-green-200 text-xs mt-1">
             {paso === 'datos'
@@ -60,7 +60,7 @@ export const NuevoSemestreModal = ({ visible, onCerrar, onConfirmar, cargando, e
                 value={nombre}
                 onChange={e => setNombre(e.target.value)}
                 placeholder="ej. 2026-1"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-700"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ucc-green"
               />
             </div>
 
@@ -73,7 +73,7 @@ export const NuevoSemestreModal = ({ visible, onCerrar, onConfirmar, cargando, e
                   type="date"
                   value={fechaInicio}
                   onChange={e => setFechaInicio(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-700"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ucc-green"
                 />
               </div>
               <div>
@@ -84,7 +84,7 @@ export const NuevoSemestreModal = ({ visible, onCerrar, onConfirmar, cargando, e
                   type="date"
                   value={fechaFin}
                   onChange={e => setFechaFin(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-700"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ucc-green"
                 />
               </div>
             </div>
@@ -154,7 +154,7 @@ export const NuevoSemestreModal = ({ visible, onCerrar, onConfirmar, cargando, e
               <button
                 onClick={() => setPaso('confirmar')}
                 disabled={!nombre.trim() || !fechasValidas}
-                className="text-sm bg-[#1B4332] text-white px-5 py-2 rounded-lg hover:bg-[#1B6B3A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="text-sm bg-ucc-green text-white px-5 py-2 rounded-lg hover:bg-ucc-green transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Continuar →
               </button>

@@ -1,13 +1,13 @@
-import React from 'react';
+﻿import React from 'react';
 
 /**
  * Fila de información reutilizable
  */
 const InfoRow = ({ icon, label, value }) => (
   <div className="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0">
-    <span className="text-blue-800 mt-0.5 text-lg flex-shrink-0">{icon}</span>
+    <span className="text-ucc-cyan-dark mt-0.5 text-lg flex-shrink-0">{icon}</span>
     <div>
-      <p className="text-xs text-blue-700 font-medium mb-0.5">{label}</p>
+      <p className="text-xs text-ucc-cyan-dark font-medium mb-0.5">{label}</p>
       <p className="text-sm text-gray-800 font-semibold">{value}</p>
     </div>
   </div>
@@ -18,28 +18,28 @@ const InfoRow = ({ icon, label, value }) => (
  */
 const rolConfig = {
   Estudiante: {
-    icon: '📚',
+    icon: '',
     label: 'Información Académica',
-    color: 'text-green-700',
+    color: 'text-ucc-green',
     fields: (info) => [
-      { icon: '🎓', label: 'Programa', value: info.programa ?? info.programa_academico },
+      { icon: '', label: 'Programa', value: info.programa ?? info.programa_academico },
     ],
   },
   Empleado: {
-    icon: '💼',
+    icon: '',
     label: 'Información Laboral',
-    color: 'text-blue-700',
+    color: 'text-ucc-cyan-dark',
     fields: (info) => [
-      { icon: '🏢', label: 'Dependencia', value: info.dependencia },
-      { icon: '👔', label: 'Cargo',        value: info.cargo },
+      {  label: 'Dependencia', value: info.dependencia },
+      {  label: 'Cargo',        value: info.cargo },
     ],
   },
   Contratista: {
-    icon: '🤝',
+    icon: '',
     label: 'Información de Contrato',
     color: 'text-orange-700',
     fields: (info) => [
-      { icon: '🏭', label: 'Empresa', value: info.empresa ?? info.empresa_proveedora },
+      { icon: '', label: 'Empresa', value: info.empresa ?? info.empresa_proveedora },
     ],
   },
 };
@@ -53,7 +53,7 @@ export const RoleInfoCard = ({ rol, info }) => {
   if (!config || !info) return null;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="rounded-2xl shadow-sm border border-gray-100 overflow-hidden" style={{ backgroundColor: '#ffffff' }}>
       {/* Encabezado */}
       <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-100">
         <span>{config.icon}</span>

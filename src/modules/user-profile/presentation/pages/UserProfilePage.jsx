@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { mockUserProfile }  from '../../infrastructure/datasources/userProfileMock';
 import { useUserProfile }   from '../../application/hooks/useUserProfile';
@@ -6,7 +6,7 @@ import { ProfileHeader }    from '../components/ProfileHeader';
 import { PersonalInfoCard } from '../components/PersonalInfoCard';
 import { RoleInfoCard }     from '../components/RoleInfoCard';
 import { FallasHistory }    from '../components/FallasHistory';
-import { ReportTICModal }   from '../components/ReportTICModal';
+import { ReportTIPModal }   from '../components/ReportTIPModal';
 
 export const UserProfilePage = () => {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ export const UserProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-gray-800 to-ucc-cyan flex justify-center">
       <div className="w-full max-w-md flex flex-col relative">
 
         {/* ── Cabecera con botón volver ── */}
@@ -100,17 +100,17 @@ export const UserProfilePage = () => {
 
           {/* Aviso Sin Carnet */}
           <div className="bg-yellow-50 border border-yellow-300 rounded-2xl p-4 flex gap-3">
-            <span className="text-yellow-500 text-xl flex-shrink-0">⚠️</span>
+            <span className="text-yellow-500 text-xl flex-shrink-0"></span>
             <p className="text-sm text-yellow-800 leading-relaxed">
               <span className="font-bold">Sin carnet —</span>{' '}
-              Para autorizar el ingreso, reporta el estado de tu Tarjeta de
-              Identificación Cooperativista (TIC).
+               Reporta el estado de la Tarjeta de 
+              Identificación personal (TIP).
             </p>
           </div>
 
           {/* Resultado del reporte (feedback visual) */}
           {reportResult && reportResult !== 'error' && (
-            <div className="rounded-2xl p-4 text-center font-semibold text-sm bg-green-50 border border-green-300 text-green-700">
+            <div className="rounded-2xl p-4 text-center font-semibold text-sm bg-green-50 border border-green-300 text-ucc-green">
               ✅ Falla registrada correctamente.
             </div>
           )}
@@ -124,20 +124,20 @@ export const UserProfilePage = () => {
           <div className="h-20" />
         </div>
 
-        {/* ── Botón Reportar TIC fijo abajo ── */}
-        <div className="sticky bottom-0 bg-gradient-to-t from-gray-100 via-gray-100 to-transparent pt-4 pb-6 px-4">
+        {/* ── Botón Reportar TIP fijo abajo ── */}
+        <div className="sticky bottom-0 bg-gradient-to-t from-ucc-cyan/60 to-transparent pt-4 pb-6 px-4">
           <button
             onClick={() => setModalOpen(true)}
-            className="w-full py-4 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-bold text-base rounded-2xl shadow-lg transition-colors flex items-center justify-center gap-2"
+            className="w-full py-4 bg-red-600 hover:bg-red-700 active:bg-red-700 text-white font-bold text-base rounded-2xl shadow-lg transition-colors flex items-center justify-center gap-2"
           >
-            ✅ Reportar TIC
+             Reportar TIP
           </button>
         </div>
 
       </div>
 
       {/* ── Modal ── */}
-      <ReportTICModal
+      <ReportTIPModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={handleConfirmReport}

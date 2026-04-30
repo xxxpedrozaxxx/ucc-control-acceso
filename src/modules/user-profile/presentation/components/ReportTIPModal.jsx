@@ -32,10 +32,10 @@ const ReportOption = ({ id, selected, onSelect, icon, title, description, border
 );
 
 /**
- * Modal para reportar TIC
+ * Modal para reportar 
  * Opciones: Reportar como perdida | Reportar por olvido
  */
-export const ReportTICModal = ({ isOpen, onClose, onConfirm, nombreUsuario }) => {
+export const ReportTIPModal = ({ isOpen, onClose, onConfirm, nombreUsuario }) => {
   const [selected, setSelected] = useState(null);
 
   const handleConfirm = () => {
@@ -66,9 +66,9 @@ export const ReportTICModal = ({ isOpen, onClose, onConfirm, nombreUsuario }) =>
           {/* Cabecera del modal */}
           <div className="flex items-start justify-between mb-1">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">⚠️</span>
+              <span className="text-2xl"></span>
               <div>
-                <h3 className="font-bold text-gray-900 text-base">Reportar TIC</h3>
+                <h3 className="font-bold text-gray-900 text-base">Reportar TIP </h3>
                 <p className="text-xs text-gray-500">{nombreUsuario}, seleccioná el motivo del reporte</p>
               </div>
             </div>
@@ -89,9 +89,9 @@ export const ReportTICModal = ({ isOpen, onClose, onConfirm, nombreUsuario }) =>
               id="perdida"
               selected={selected === 'perdida'}
               onSelect={setSelected}
-              icon="⚠️"
-              title="Perdí mi TIC"
-              description="Mi TIC se extravió. Esto queda registrado como falla. Al acumular 4 fallas el acceso se bloquea."
+              icon=""
+              title="Perdí mi TIP"
+              description="Mi TIP se extravió. Esto queda registrado como falla. Al acumular 4 fallas el acceso se bloquea."
               borderColor="border-red-500"
               selectedBg="bg-red-50"
             />
@@ -99,9 +99,9 @@ export const ReportTICModal = ({ isOpen, onClose, onConfirm, nombreUsuario }) =>
               id="olvido"
               selected={selected === 'olvido'}
               onSelect={setSelected}
-              icon="📋"
-              title="Olvidé mi TIC"
-              description="Olvidé mi TIC hoy. Esto queda registrado como falla. Al acumular 4 fallas el acceso se bloquea."
+              icon=""
+              title="Olvidé mi TIP"
+              description="Olvidé mi TIP hoy. Esto queda registrado como falla. Al acumular 4 fallas el acceso se bloquea."
               borderColor="border-blue-500"
               selectedBg="bg-blue-50"
             />

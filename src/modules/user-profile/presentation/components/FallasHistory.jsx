@@ -29,11 +29,11 @@ export const FallasHistory = ({ fallas = [], totalFallas }) => {
   if (totalFallas === 0 || fallas.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="rounded-2xl shadow-sm border border-gray-100 overflow-hidden" style={{ backgroundColor: '#ffffff' }}>
       {/* Encabezado */}
       <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
         <div className="flex items-center gap-2">
-          <span>⚠️</span>
+          <span></span>
           <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide">
             Historial de Fallas
           </h2>

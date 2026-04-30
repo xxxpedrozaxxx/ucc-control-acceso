@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   PALETA CORPORATIVA UCC — fuente única de color
+   Llama estos tokens desde Tailwind: bg-ucc-green, text-ucc-cyan, etc.
+   O desde JS:  import { UCC } from '@/shared/styles/theme'
+   ============================================================ */
+:root {
+  /* Colores del logo UCC */
+  --ucc-lima:       #ccd617;
+  --ucc-cyan:       #03abc7;
+  --ucc-sage:       #e3e9dc;
+  --ucc-gray:       #5f5d5e;
+  --ucc-green:      #82bb2a;
+  --ucc-sky:        #82dbe8;
+
+  /* Variantes funcionales derivadas */
+  --ucc-green-dark: #5a8a1a;   /* hover de botón / sidebar activo */
+  --ucc-cyan-dark:  #027a91;   /* hover de acento cyan */
+  --ucc-bg:         #f7f8f5;   /* fondo general (sage muy claro) */
+}
+
 /* Estilos globales */
 * {
   margin: 0;

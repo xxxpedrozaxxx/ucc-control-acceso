@@ -7,17 +7,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Colores corporativos UCC
-        'ucc-azul': {
-          primary: '#003DA5',
-          dark: '#002870',
-          light: '#4A7BBA',
-        },
-        'ucc-naranja': {
-          primary: '#FF6B35',
-          light: '#FF8C5F',
-          dark: '#E55A2B',
-        }
+        // Paleta corporativa UCC (del logo oficial)
+        'ucc-lima':       '#ccd617',
+        'ucc-cyan':       '#03abc7',
+        'ucc-sage':       '#e3e9dc',
+        'ucc-gray':       '#5f5d5e',
+        'ucc-green':      '#82bb2a',
+        'ucc-sky':        '#82dbe8',
+        'ucc-green-dark': '#5a8a1a',
+        'ucc-cyan-dark':  '#027a91',
+        'ucc-bg':         '#f7f8f5',
       },
       fontFamily: {
         sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],

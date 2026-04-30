@@ -82,7 +82,7 @@ export const useAdminDashboard = () => {
           ? { ...u, acceso: nuevoAcceso, total_fallas: nuevoAcceso === 'activo' ? 0 : u.total_fallas }
           : u
       )
-    );
+    );        
     repo.getStats().then(s => setStats(s)).catch(() => {});
   };
 

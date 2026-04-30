@@ -29,9 +29,9 @@ export const ProfileHeader = ({ user }) => {
   };
 
   return (
-    <div className="bg-blue-900 pt-12 pb-8 px-6 flex flex-col items-center text-white relative">
+    <div className="bg-white/15 backdrop-blur-sm pt-12 pb-8 px-6 flex flex-col items-center text-white relative">
       {/* Avatar */}
-      <div className="w-24 h-24 rounded-full border-4 border-white shadow-xl overflow-hidden mb-4 bg-blue-700 flex items-center justify-center">
+      <div className="w-24 h-24 rounded-full border-4 border-white shadow-xl overflow-hidden mb-4 bg-ucc-cyan-dark flex items-center justify-center">
         {foto_url ? (
           <img src={foto_url} alt={nombre_completo} className="w-full h-full object-cover" />
         ) : (
@@ -56,15 +56,12 @@ export const ProfileHeader = ({ user }) => {
         {isActive ? 'Activo' : 'Bloqueado'}
       </span>
 
-      {/* Subtítulo */}
-      <p className="text-blue-200 text-sm text-center">{getSubtitle()}</p>
-
       {/* Indicador de fallas */}
       {user.total_fallas > 0 && (
         <div className={`mt-3 px-4 py-1.5 rounded-full text-xs font-semibold ${
           user.total_fallas >= 3
             ? 'bg-orange-500 text-white'
-            : 'bg-blue-700 text-blue-100'
+            : 'bg-ucc-green text-white/80'
         }`}>
           {user.total_fallas}/4 fallas registradas
         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+﻿import React, { useState, useRef } from 'react';
 import { AdminRepositoryImpl } from '../../../infrastructure/repositories/AdminRepositoryImpl';
 
 const repo = new AdminRepositoryImpl();
@@ -16,20 +16,20 @@ const Stepper = ({ pasoActual }) => (
           <React.Fragment key={i}>
             <div className="flex flex-col items-center flex-shrink-0">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-                done   ? 'bg-green-700 text-white' :
-                active ? 'bg-[#1B4332] text-white' :
+                done   ? 'bg-ucc-green text-white' :
+                active ? 'bg-ucc-green text-white' :
                          'bg-gray-100 text-gray-400'
               }`}>
                 {done ? '✓' : i + 1}
               </div>
               <p className={`text-xs mt-1 font-medium whitespace-nowrap ${
-                active ? 'text-[#1B4332]' : done ? 'text-green-700' : 'text-gray-400'
+                active ? 'text-ucc-green' : done ? 'text-ucc-green' : 'text-gray-400'
               }`}>
                 {nombre}
               </p>
             </div>
             {i < NOMBRES_PASO.length - 1 && (
-              <div className={`flex-1 h-0.5 mx-1 mb-5 transition-colors ${i < pasoActual ? 'bg-green-700' : 'bg-gray-100'}`} />
+              <div className={`flex-1 h-0.5 mx-1 mb-5 transition-colors ${i < pasoActual ? 'bg-ucc-green' : 'bg-gray-100'}`} />
             )}
           </React.Fragment>
         );
@@ -259,7 +259,7 @@ const AgregarUsuarioPanel = ({ onCerrar }) => {
   if (ok) return (
     <div className="bg-white rounded-xl border border-green-200 shadow-sm p-6 text-center">
       <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-green-700">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-ucc-green">
           <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
         </svg>
       </div>
@@ -276,7 +276,7 @@ const AgregarUsuarioPanel = ({ onCerrar }) => {
         </button>
         <button
           onClick={onCerrar}
-          className="text-sm px-4 py-2 rounded-lg bg-[#1B4332] text-white hover:bg-[#1B6B3A] transition-colors"
+          className="text-sm px-4 py-2 rounded-lg bg-ucc-green text-white hover:bg-ucc-green transition-colors"
         >
           Listo
         </button>
@@ -306,7 +306,7 @@ const AgregarUsuarioPanel = ({ onCerrar }) => {
               value={base.id_institucional}
               onChange={e => setBase(b => ({ ...b, id_institucional: e.target.value.trim() }))}
               placeholder="ej. 80123456"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-700"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ucc-green"
             />
           </div>
           <div>
@@ -316,7 +316,7 @@ const AgregarUsuarioPanel = ({ onCerrar }) => {
               value={base.documento_identidad}
               onChange={e => setBase(b => ({ ...b, documento_identidad: e.target.value.trim() }))}
               placeholder="ej. 1001234567"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-700"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ucc-green"
             />
           </div>
           <div>
@@ -326,7 +326,7 @@ const AgregarUsuarioPanel = ({ onCerrar }) => {
               value={base.nombre_completo}
               onChange={e => setBase(b => ({ ...b, nombre_completo: e.target.value }))}
               placeholder="ej. Juan Perez Gomez"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-700"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ucc-green"
             />
           </div>
           <div>
@@ -347,7 +347,7 @@ const AgregarUsuarioPanel = ({ onCerrar }) => {
           <button
             onClick={() => setSubPaso(1)}
             disabled={!baseValido}
-            className="w-full text-sm bg-[#1B4332] text-white py-2.5 rounded-lg font-medium hover:bg-[#1B6B3A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full text-sm bg-ucc-green text-white py-2.5 rounded-lg font-medium hover:bg-ucc-green transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Continuar →
           </button>
@@ -421,7 +421,7 @@ const AgregarUsuarioPanel = ({ onCerrar }) => {
             <button
               onClick={guardar}
               disabled={cargando || !rolesExtraValido}
-              className="flex-1 text-sm bg-[#1B4332] text-white py-2 rounded-lg font-medium hover:bg-[#1B6B3A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 text-sm bg-ucc-green text-white py-2 rounded-lg font-medium hover:bg-ucc-green transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {cargando ? (
                 <>
@@ -576,7 +576,7 @@ export const CargarCSVView = () => {
       <div className="space-y-5 max-w-lg mx-auto">
         <div className="bg-white rounded-2xl border border-green-200 shadow-sm p-10 text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8 text-green-700">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8 text-ucc-green">
               <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
             </svg>
           </div>
@@ -597,7 +597,7 @@ export const CargarCSVView = () => {
               </div>
             ))}
           </div>
-          <button onClick={reiniciar} className="text-sm px-5 py-2.5 rounded-lg bg-[#1B4332] text-white hover:bg-[#1B6B3A] transition-colors">
+          <button onClick={reiniciar} className="text-sm px-5 py-2.5 rounded-lg bg-ucc-green text-white hover:bg-ucc-green transition-colors">
             Iniciar otro semestre
           </button>
         </div>
@@ -626,7 +626,7 @@ export const CargarCSVView = () => {
                 value={semestre.nombre}
                 onChange={e => setSemestre(s => ({ ...s, nombre: e.target.value }))}
                 placeholder="ej. 2026-1"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-700"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ucc-green"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -636,7 +636,7 @@ export const CargarCSVView = () => {
                   type="date"
                   value={semestre.fechaInicio}
                   onChange={e => setSemestre(s => ({ ...s, fechaInicio: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-700"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ucc-green"
                 />
               </div>
               <div>
@@ -645,7 +645,7 @@ export const CargarCSVView = () => {
                   type="date"
                   value={semestre.fechaFin}
                   onChange={e => setSemestre(s => ({ ...s, fechaFin: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-700"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ucc-green"
                 />
               </div>
             </div>
@@ -658,8 +658,8 @@ export const CargarCSVView = () => {
                 onClick={() => setAgregarAbierto(a => !a)}
                 className={`text-sm border px-4 py-2 rounded-lg transition-colors ${
                   agregarAbierto
-                    ? 'bg-[#1B4332] text-white border-[#1B4332] hover:bg-[#1B6B3A]'
-                    : 'text-[#1B4332] border-[#1B4332] hover:bg-green-50'
+                    ? 'bg-ucc-green text-white border-ucc-green hover:bg-ucc-green'
+                    : 'text-ucc-green border-ucc-green hover:bg-green-50'
                 }`}
               >
                 {agregarAbierto ? '✕ Cerrar panel' : '+ Agregar usuario'}
@@ -667,7 +667,7 @@ export const CargarCSVView = () => {
               <button
                 onClick={() => irAPaso(1)}
                 disabled={!semestreValido}
-                className="text-sm bg-[#1B4332] text-white px-5 py-2.5 rounded-lg hover:bg-[#1B6B3A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="text-sm bg-ucc-green text-white px-5 py-2.5 rounded-lg hover:bg-ucc-green transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Iniciar semestre
               </button>
@@ -717,7 +717,7 @@ export const CargarCSVView = () => {
               }`}
             >
               {dragOver ? (
-                <p className="text-green-700 font-bold text-lg py-4">
+                <p className="text-ucc-green font-bold text-lg py-4">
                   ↓ Suelta el archivo aqui
                 </p>
               ) : (
@@ -847,7 +847,7 @@ export const CargarCSVView = () => {
             <button
               onClick={handleEmpezarSemestre}
               disabled={cargando || !staged.usuarios?.length}
-              className="flex items-center gap-2 text-sm bg-[#1B4332] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1B6B3A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 text-sm bg-ucc-green text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-ucc-green transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {cargando ? (
                 <>

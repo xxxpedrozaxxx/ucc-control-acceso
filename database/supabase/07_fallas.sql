@@ -7,7 +7,7 @@
 -- ============================================================
 -- TABLA: fallas
 -- Cada fila = un incidente registrado por el propio usuario
--- cuando no porta su TIC (Tarjeta de Identificación Cooperativista).
+-- cuando no porta su TIP (Tarjeta de Identificación Personal).
 --
 -- El trigger fn_actualizar_fallas() se encarga de:
 --   1. Recalcular total_fallas en la tabla usuarios
@@ -25,10 +25,10 @@ CREATE TABLE fallas (
                      CHECK (motivo IN ('olvido', 'perdida'))
 );
 
-COMMENT ON TABLE  fallas                   IS 'Registro de incidentes por ausencia de TIC';
+COMMENT ON TABLE  fallas                   IS 'Registro de incidentes por ausencia de TIP';
 COMMENT ON COLUMN fallas.id_institucional  IS 'FK → usuarios.id_institucional';
 COMMENT ON COLUMN fallas.fecha_hora        IS 'Fecha y hora del incidente (zona horaria incluida)';
-COMMENT ON COLUMN fallas.motivo            IS 'olvido = olvidó la TIC | perdida = TIC perdida';
+COMMENT ON COLUMN fallas.motivo            IS 'olvido = olvidó la TIP | perdida = TIP perdida';
 
 CREATE INDEX idx_fallas_id_inst    ON fallas (id_institucional);
 CREATE INDEX idx_fallas_fecha_hora ON fallas (fecha_hora DESC);

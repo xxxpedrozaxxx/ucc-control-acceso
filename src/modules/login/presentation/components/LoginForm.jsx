@@ -102,7 +102,7 @@ export const LoginForm = () => {
 
         {/* Información adicional */}
         <div className="text-center text-xs text-gray-500 mt-4">
-          <p>⚠️ Solo para ingresos contingentes sin carnet</p>
+          <p> Solo para ingresos contingentes sin carnet</p>
         </div>
       </form>
     </div>

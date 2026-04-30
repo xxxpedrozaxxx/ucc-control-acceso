@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 // - onSubmit: async function({ idInstitucional, remember }) => void
 // - logo: URL string for the logo image (optional)
 // - primaryColor: CSS color string for main accent (optional)
-export const LoginFormPlain = ({ onSubmit, logo, primaryColor = '#1B6B3A' }) => {
+export const LoginFormPlain = ({ onSubmit, logo, primaryColor = 'var(--ucc-green)' }) => {
   const [id, setId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
