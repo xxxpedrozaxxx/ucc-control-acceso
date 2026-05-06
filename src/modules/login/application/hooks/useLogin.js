@@ -27,16 +27,10 @@ export const useLogin = () => {
 
       if (result.success) {
         setUser(result.user);
-        return {
-          success: true,
-          user: result.user
-        };
+        return { success: true, user: result.user };
       } else {
         setError(result.error);
-        return {
-          success: false,
-          error: result.error
-        };
+        return { success: false, blocked: result.blocked ?? false, error: result.error };
       }
     } catch (err) {
       const errorMessage = 'Error inesperado al validar el ID';

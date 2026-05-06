@@ -44,7 +44,8 @@ export class ValidateInstitutionalIdUseCase {
       if (user.isBlocked()) {
         return {
           success: false,
-          error: 'Tu acceso está bloqueado. Acercate al CAD o a la facultad.'
+          blocked: true,
+          error: 'Usuario bloqueado',
         };
       }
 

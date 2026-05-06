@@ -10,10 +10,11 @@ export class AdminAuthRepositoryImpl {
    * Retorna el objeto usuario si las credenciales son válidas.
    */
   async login(idInstitucional, contrasena) {
-    // 1. Buscar el hash almacenado y nivel
+    // 1. Buscar el hash, nivel y nombre directamente en admins
+    //    (los admins son independientes de la tabla usuarios)
     const { data: adminRow, error } = await supabase
       .from('admins')
-      .select('contrasena_hash, nivel')
+      .select('contrasena_hash, nivel, nombre_completo')
       .eq('id_institucional', idInstitucional)
       .single();
 
@@ -27,25 +28,10 @@ export class AdminAuthRepositoryImpl {
       throw new Error('Credenciales inválidas.');
     }
 
-    // 3. Obtener datos básicos del usuario
-    const { data: usuario, error: errUser } = await supabase
-      .from('usuarios')
-      .select('id_institucional, nombre_completo, acceso')
-      .eq('id_institucional', idInstitucional)
-      .single();
-
-    if (errUser || !usuario) {
-      throw new Error('Usuario no encontrado.');
-    }
-
-    if (usuario.acceso === 'bloqueado') {
-      throw new Error('Esta cuenta está bloqueada. Contacta soporte.');
-    }
-
-    // 4. Persistir sesión en sessionStorage (dura hasta cerrar la pestaña)
+    // 3. Persistir sesión en sessionStorage (dura hasta cerrar la pestaña)
     const sesion = {
-      id_institucional: usuario.id_institucional,
-      nombre_completo:  usuario.nombre_completo,
+      id_institucional: idInstitucional,
+      nombre_completo:  adminRow.nombre_completo ?? idInstitucional,
       nivel:            adminRow.nivel,      // 'superadmin' | 'admin'
     };
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(sesion));

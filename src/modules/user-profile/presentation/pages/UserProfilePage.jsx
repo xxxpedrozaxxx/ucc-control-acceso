@@ -7,6 +7,9 @@ import { PersonalInfoCard } from '../components/PersonalInfoCard';
 import { RoleInfoCard }     from '../components/RoleInfoCard';
 import { FallasHistory }    from '../components/FallasHistory';
 import { ReportTIPModal }   from '../components/ReportTIPModal';
+import { PantallaBloqueo }  from '../../../../shared/components/PantallaBloqueo';
+
+const MAX_FALLAS = 4;
 
 export const UserProfilePage = () => {
   const navigate = useNavigate();
@@ -52,6 +55,15 @@ export const UserProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 to-ucc-cyan flex justify-center">
+      {/* Overlay de sanción — aparece cuando llega a MAX_FALLAS */}
+      {totalFallasReal >= MAX_FALLAS && (
+        <PantallaBloqueo
+          nombre={user.nombre_completo}
+          onAction={() => navigate('/login')}
+          actionLabel="Salir"
+        />
+      )}
+
       <div className="w-full max-w-md flex flex-col relative">
 
         {/* ── Cabecera con botón volver ── */}

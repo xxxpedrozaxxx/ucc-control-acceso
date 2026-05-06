@@ -184,7 +184,7 @@ export const ReportesView = ({ reporte, loading, periodo = 'semanal', offset = 0
       wsResumen['!cols'] = [{ wch: 30 }, { wch: 20 }];
       XLSX.utils.book_append_sheet(wb, wsResumen, 'Resumen');
 
-      // Hoja 2: Fallas por día
+      // Hoja 2: Fallas por día — resumen
       if (reporte.fallasPorDia?.length) {
         const wsFallas = XLSX.utils.json_to_sheet(
           reporte.fallasPorDia.map(f => ({ Día: f.dia, 'Total fallas': f.total }))
@@ -192,59 +192,177 @@ export const ReportesView = ({ reporte, loading, periodo = 'semanal', offset = 0
         wsFallas['!cols'] = [{ wch: 15 }, { wch: 15 }];
         XLSX.utils.book_append_sheet(wb, wsFallas, 'Fallas por día');
       }
+      // Hoja 3: Fallas por día — detalle con nombres
+      if (reporte.fallasPorDiaDetalle?.length) {
+        const wsFDet = XLSX.utils.json_to_sheet(
+          reporte.fallasPorDiaDetalle.map(f => ({
+            Día:               f.dia,
+            'Nombre completo': f.nombre,
+            'ID Institucional': f.id_institucional,
+            Tipo:              f.tipo,
+          }))
+        );
+        wsFDet['!cols'] = [{ wch: 12 }, { wch: 35 }, { wch: 18 }, { wch: 14 }];
+        XLSX.utils.book_append_sheet(wb, wsFDet, 'Fallas por día Detalle');
+      }
 
-      // Hoja 3: Estudiantes por programa
+      // Hoja 4: Por programa — resumen
       if (reporte.porPrograma?.length) {
-        const wsPrograma = XLSX.utils.json_to_sheet(
-          reporte.porPrograma.map(p => ({ Programa: p.programa, Estudiantes: p.total }))
+        const wsProg = XLSX.utils.json_to_sheet(
+          reporte.porPrograma.map(p => ({ Programa: p.programa, 'Total estudiantes': p.total }))
         );
-        wsPrograma['!cols'] = [{ wch: 40 }, { wch: 15 }];
-        XLSX.utils.book_append_sheet(wb, wsPrograma, 'Por programa');
+        wsProg['!cols'] = [{ wch: 40 }, { wch: 20 }];
+        XLSX.utils.book_append_sheet(wb, wsProg, 'Por programa');
+      }
+      // Hoja 5: Por programa — detalle con nombres
+      if (reporte.estudiantesPorPrograma?.length) {
+        const wsProgDet = XLSX.utils.json_to_sheet(
+          reporte.estudiantesPorPrograma.map(p => ({
+            Programa:          p.programa,
+            'Nombre completo': p.nombre,
+            'ID Institucional': p.id_institucional,
+          }))
+        );
+        wsProgDet['!cols'] = [{ wch: 40 }, { wch: 35 }, { wch: 18 }];
+        XLSX.utils.book_append_sheet(wb, wsProgDet, 'Por programa Detalle');
       }
 
-      // Hoja 4: Empleados por dependencia
+      // Hoja 6: Por dependencia — resumen
       if (reporte.porDependencia?.length) {
-        const wsDep = XLSX.utils.json_to_sheet(
-          reporte.porDependencia.map(d => ({ Dependencia: d.dependencia, Empleados: d.total }))
+        const wsDepRes = XLSX.utils.json_to_sheet(
+          reporte.porDependencia.map(d => ({ Dependencia: d.dependencia, 'Total empleados': d.total }))
         );
-        wsDep['!cols'] = [{ wch: 35 }, { wch: 15 }];
-        XLSX.utils.book_append_sheet(wb, wsDep, 'Por dependencia');
+        wsDepRes['!cols'] = [{ wch: 35 }, { wch: 18 }];
+        XLSX.utils.book_append_sheet(wb, wsDepRes, 'Por dependencia');
+      }
+      // Hoja 7: Por dependencia — detalle con nombres
+      if (reporte.empleadosPorDependencia?.length) {
+        const wsDepDet = XLSX.utils.json_to_sheet(
+          reporte.empleadosPorDependencia.map(d => ({
+            Dependencia:       d.dependencia,
+            'Nombre completo': d.nombre,
+            'ID Institucional': d.id_institucional,
+          }))
+        );
+        wsDepDet['!cols'] = [{ wch: 35 }, { wch: 35 }, { wch: 18 }];
+        XLSX.utils.book_append_sheet(wb, wsDepDet, 'Por dependencia Detalle');
       }
 
-      // Hoja 5: Fallas por programa académico
+      // Hoja 8: Por empresa — resumen
+      if (reporte.porEmpresa?.length) {
+        const wsEmpRes = XLSX.utils.json_to_sheet(
+          reporte.porEmpresa.map(c => ({ Empresa: c.empresa, 'Total contratistas': c.total }))
+        );
+        wsEmpRes['!cols'] = [{ wch: 35 }, { wch: 20 }];
+        XLSX.utils.book_append_sheet(wb, wsEmpRes, 'Por empresa');
+      }
+      // Hoja 9: Por empresa — detalle con nombres
+      if (reporte.contratistasPorEmpresa?.length) {
+        const wsEmpDet = XLSX.utils.json_to_sheet(
+          reporte.contratistasPorEmpresa.map(c => ({
+            Empresa:           c.empresa,
+            'Nombre completo': c.nombre,
+            'ID Institucional': c.id_institucional,
+          }))
+        );
+        wsEmpDet['!cols'] = [{ wch: 35 }, { wch: 35 }, { wch: 18 }];
+        XLSX.utils.book_append_sheet(wb, wsEmpDet, 'Por empresa Detalle');
+      }
+
+      // Hoja 10: Fallas por programa — resumen
       if (reporte.fallasPorPrograma?.length) {
-        const wsFP = XLSX.utils.json_to_sheet(
+        const wsFPRes = XLSX.utils.json_to_sheet(
           reporte.fallasPorPrograma.map(r => ({
-            'Programa académico': r.programa,
-            'Fallas en el período': r.fallas_total,
+            'Programa académico':    r.programa,
+            'Fallas en el período':  r.fallas_total,
           }))
         );
-        wsFP['!cols'] = [{ wch: 40 }, { wch: 22 }];
-        XLSX.utils.book_append_sheet(wb, wsFP, 'Fallas por programa');
+        wsFPRes['!cols'] = [{ wch: 40 }, { wch: 22 }];
+        XLSX.utils.book_append_sheet(wb, wsFPRes, 'Fallas por programa');
+      }
+      // Hoja 11: Fallas por programa — detalle con nombres
+      if (reporte.personasConFallas?.some(p => p.tipo === 'Estudiante')) {
+        const wsFPDet = XLSX.utils.json_to_sheet(
+          reporte.personasConFallas
+            .filter(p => p.tipo === 'Estudiante')
+            .map(p => ({
+              'Programa académico':    p.grupo,
+              'Nombre completo':       p.nombre,
+              'ID Institucional':      p.id_institucional,
+              'Fallas en el período':  p.fallas,
+            }))
+        );
+        wsFPDet['!cols'] = [{ wch: 40 }, { wch: 35 }, { wch: 18 }, { wch: 22 }];
+        XLSX.utils.book_append_sheet(wb, wsFPDet, 'Fallas por prog. Detalle');
       }
 
-      // Hoja 6: Fallas por dependencia (empleados)
+      // Hoja 12: Fallas por dependencia — resumen
       if (reporte.fallasPorDependencia?.length) {
-        const wsFD = XLSX.utils.json_to_sheet(
+        const wsFDRes = XLSX.utils.json_to_sheet(
           reporte.fallasPorDependencia.map(r => ({
-            Dependencia: r.dependencia,
-            'Fallas en el período': r.fallas_total,
+            Dependencia:             r.dependencia,
+            'Fallas en el período':  r.fallas_total,
           }))
         );
-        wsFD['!cols'] = [{ wch: 35 }, { wch: 22 }];
-        XLSX.utils.book_append_sheet(wb, wsFD, 'Fallas por dependencia');
+        wsFDRes['!cols'] = [{ wch: 35 }, { wch: 22 }];
+        XLSX.utils.book_append_sheet(wb, wsFDRes, 'Fallas por dependencia');
+      }
+      // Hoja 13: Fallas por dependencia — detalle con nombres
+      if (reporte.personasConFallas?.some(p => p.tipo === 'Empleado')) {
+        const wsFDDet = XLSX.utils.json_to_sheet(
+          reporte.personasConFallas
+            .filter(p => p.tipo === 'Empleado')
+            .map(p => ({
+              Dependencia:             p.grupo,
+              'Nombre completo':       p.nombre,
+              'ID Institucional':      p.id_institucional,
+              'Fallas en el período':  p.fallas,
+            }))
+        );
+        wsFDDet['!cols'] = [{ wch: 35 }, { wch: 35 }, { wch: 18 }, { wch: 22 }];
+        XLSX.utils.book_append_sheet(wb, wsFDDet, 'Fallas por dep. Detalle');
       }
 
-      // Hoja 7: Fallas por empresa contratista
+      // Hoja 14: Fallas por empresa — resumen
       if (reporte.fallasPorEmpresa?.length) {
-        const wsFE = XLSX.utils.json_to_sheet(
+        const wsFERes = XLSX.utils.json_to_sheet(
           reporte.fallasPorEmpresa.map(r => ({
-            Empresa: r.empresa,
-            'Fallas en el período': r.fallas_total,
+            Empresa:                 r.empresa,
+            'Fallas en el período':  r.fallas_total,
           }))
         );
-        wsFE['!cols'] = [{ wch: 35 }, { wch: 22 }];
-        XLSX.utils.book_append_sheet(wb, wsFE, 'Fallas por empresa');
+        wsFERes['!cols'] = [{ wch: 35 }, { wch: 22 }];
+        XLSX.utils.book_append_sheet(wb, wsFERes, 'Fallas por empresa');
+      }
+      // Hoja 15: Fallas por empresa — detalle con nombres
+      if (reporte.personasConFallas?.some(p => p.tipo === 'Contratista')) {
+        const wsFEDet = XLSX.utils.json_to_sheet(
+          reporte.personasConFallas
+            .filter(p => p.tipo === 'Contratista')
+            .map(p => ({
+              Empresa:                 p.grupo,
+              'Nombre completo':       p.nombre,
+              'ID Institucional':      p.id_institucional,
+              'Fallas en el período':  p.fallas,
+            }))
+        );
+        wsFEDet['!cols'] = [{ wch: 35 }, { wch: 35 }, { wch: 18 }, { wch: 22 }];
+        XLSX.utils.book_append_sheet(wb, wsFEDet, 'Fallas por emp. Detalle');
+      }
+
+      // Hoja 16: Lista de personas con fallas (nombres)
+      if (reporte.personasConFallas?.length) {
+        const wsPersonas = XLSX.utils.json_to_sheet(
+          reporte.personasConFallas.map(p => ({
+            'Nombre completo':    p.nombre,
+            'ID Institucional':   p.id_institucional,
+            'Tipo':               p.tipo,
+            'Programa / Dependencia / Empresa': p.grupo,
+            'Fallas en el período': p.fallas,
+          }))
+        );
+        wsPersonas['!cols'] = [{ wch: 35 }, { wch: 18 }, { wch: 14 }, { wch: 40 }, { wch: 22 }];
+        XLSX.utils.book_append_sheet(wb, wsPersonas, 'Personas con fallas');
       }
 
       // Nombre del archivo con fecha
@@ -337,28 +455,28 @@ export const ReportesView = ({ reporte, loading, periodo = 'semanal', offset = 0
           titulo="Estudiantes"
           valor={reporte?.totalEstudiantes}
           subtitulo="Registrados en el sistema"
-          icono="🎓"
+          icono={<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.7} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>}
           color={{ bg: 'bg-blue-50', text: 'text-blue-600' }}
         />
         <ResumenCard
           titulo="Empleados"
           valor={reporte?.totalEmpleados}
           subtitulo="Personal administrativo"
-          icono="💼"
+          icono={<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.7} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" /></svg>}
           color={{ bg: 'bg-purple-50', text: 'text-purple-600' }}
         />
         <ResumenCard
           titulo="Contratistas"
           valor={reporte?.totalContratistas}
           subtitulo="Vinculados actualmente"
-          icono="🏢"
+          icono={<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.7} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 0 1 21.75 8.25Z" /></svg>}
           color={{ bg: 'bg-orange-50', text: 'text-orange-500' }}
         />
         <ResumenCard
           titulo="Fallas en el período"
           valor={reporte?.fallasPeriodo}
           subtitulo="Reportes sin carnet"
-          icono="⚠️"
+          icono={<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.7} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>}
           color={{ bg: 'bg-yellow-50', text: 'text-yellow-500' }}
         />
       </div>

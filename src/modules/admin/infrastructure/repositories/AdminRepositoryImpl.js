@@ -359,6 +359,7 @@ export class AdminRepositoryImpl {
       programaData,
       dependenciaData,
       contratistasData,
+      nombresData,
     ] = await Promise.all([
       // Conteo por rol
       supabase
@@ -386,6 +387,11 @@ export class AdminRepositoryImpl {
       supabase
         .from('info_contratista')
         .select('id_institucional, empresa'),
+
+      // Nombres completos de todos los usuarios
+      supabase
+        .from('usuarios')
+        .select('id_institucional, nombre_completo'),
     ]);
 
     // — Conteos por rol
@@ -436,6 +442,35 @@ export class AdminRepositoryImpl {
     (dependenciaData.data || []).forEach(r => { depById[String(r.id_institucional)] = r.dependencia  || 'Sin asignar'; });
     const empById   = {};
     (contratistasData.data || []).forEach(r => { empById[String(r.id_institucional)] = r.empresa     || 'Sin asignar'; });
+
+    // — Lookup: id_institucional → nombre_completo
+    const nombreById = {};
+    (nombresData.data || []).forEach(r => {
+      nombreById[String(r.id_institucional)] = r.nombre_completo || '—';
+    });
+
+    // — Lista detallada de personas con fallas en el período
+    const fallasPorPersona = {};
+    fallas.forEach(f => {
+      const id = String(f.id_institucional);
+      if (!fallasPorPersona[id]) {
+        let tipo = 'Desconocido';
+        let grupo = '—';
+        if (progById[id])       { tipo = 'Estudiante';  grupo = progById[id]; }
+        else if (depById[id])   { tipo = 'Empleado';    grupo = depById[id]; }
+        else if (empById[id])   { tipo = 'Contratista'; grupo = empById[id]; }
+        fallasPorPersona[id] = {
+          id_institucional: f.id_institucional,
+          nombre:           nombreById[id] || '—',
+          tipo,
+          grupo,
+          fallas:           0,
+        };
+      }
+      fallasPorPersona[id].fallas += 1;
+    });
+    const personasConFallas = Object.values(fallasPorPersona)
+      .sort((a, b) => b.fallas - a.fallas || a.nombre.localeCompare(b.nombre));
 
     // — Debug: registrar estado de datos en consola para diagnóstico
     if (process.env.NODE_ENV !== 'production') {
@@ -496,11 +531,54 @@ export class AdminRepositoryImpl {
     const fallasEmpleados    = Object.values(fallaDepMap).reduce((a, b) => a + b, 0);
     const fallasContratistas = Object.values(fallaEmpMap).reduce((a, b) => a + b, 0);
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[getReporte] resultados:',
-        { fallasPorPrograma: fallasPorPrograma.length, fallasPorDependencia: fallasPorDependencia.length, fallasPorEmpresa: fallasPorEmpresa.length,
-          fallasEstudiantes, fallasEmpleados, fallasContratistas });
-    }
+    // — Listas detalladas con nombre por persona (para hojas Excel)
+    const estudiantesPorPrograma = (programaData.data || [])
+      .map(r => ({
+        programa:         r.programa || 'Sin asignar',
+        nombre:           nombreById[String(r.id_institucional)] || '—',
+        id_institucional: r.id_institucional,
+      }))
+      .sort((a, b) => a.programa.localeCompare(b.programa) || a.nombre.localeCompare(b.nombre));
+
+    const empleadosPorDependencia = (dependenciaData.data || [])
+      .map(r => ({
+        dependencia:      r.dependencia || 'Sin asignar',
+        nombre:           nombreById[String(r.id_institucional)] || '—',
+        id_institucional: r.id_institucional,
+      }))
+      .sort((a, b) => a.dependencia.localeCompare(b.dependencia) || a.nombre.localeCompare(b.nombre));
+
+    const contratistasPorEmpresa = (contratistasData.data || [])
+      .map(r => ({
+        empresa:          r.empresa || 'Sin asignar',
+        nombre:           nombreById[String(r.id_institucional)] || '—',
+        id_institucional: r.id_institucional,
+      }))
+      .sort((a, b) => a.empresa.localeCompare(b.empresa) || a.nombre.localeCompare(b.nombre));
+
+    // — Conteo de contratistas por empresa (resumen)
+    const empCountMap = {};
+    (contratistasData.data || []).forEach(r => {
+      const e = r.empresa || 'Sin asignar';
+      empCountMap[e] = (empCountMap[e] || 0) + 1;
+    });
+    const porEmpresa = Object.entries(empCountMap)
+      .map(([empresa, total]) => ({ empresa, total }))
+      .sort((a, b) => b.total - a.total);
+
+    // — Detalle de fallas por día (una fila por falla individual)
+    const fallasPorDiaDetalle = fallas
+      .map(f => {
+        const id    = String(f.id_institucional);
+        const fecha = new Date(f.fecha_hora);
+        const dia   = fecha.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
+        let tipo = 'Desconocido';
+        if (progById[id])      tipo = 'Estudiante';
+        else if (depById[id])  tipo = 'Empleado';
+        else if (empById[id])  tipo = 'Contratista';
+        return { dia, nombre: nombreById[id] || '—', id_institucional: f.id_institucional, tipo };
+      })
+      .sort((a, b) => a.dia.localeCompare(b.dia) || a.nombre.localeCompare(b.nombre));
 
     return {
       totalEstudiantes:  contarRol('Estudiante'),
@@ -511,11 +589,17 @@ export class AdminRepositoryImpl {
       fallasEmpleados,
       fallasContratistas,
       fallasPorDia,
+      fallasPorDiaDetalle,
       porPrograma,
       porDependencia,
+      porEmpresa,
       fallasPorPrograma,
       fallasPorDependencia,
       fallasPorEmpresa,
+      personasConFallas,
+      estudiantesPorPrograma,
+      empleadosPorDependencia,
+      contratistasPorEmpresa,
       rangoEtiqueta: [
         inicio.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }),
         ' — ',
@@ -542,13 +626,6 @@ export class AdminRepositoryImpl {
    *    EXCEPTO los usuarios que son administradores (son permanentes).
    */
   async iniciarNuevoSemestre(nombre, fechaInicio, fechaFin) {
-    // Paso 0: obtener IDs de todos los admins para preservarlos
-    const { data: adminRows, error: errAdmins } = await supabase
-      .from('admins')
-      .select('id_institucional');
-    if (errAdmins) throw new Error(`Error obteniendo admins: ${errAdmins.message}`);
-    const adminIds = (adminRows || []).map(a => a.id_institucional);
-
     // Paso 1: desactivar semestre anterior
     await supabase
       .from('semestres')
@@ -563,32 +640,24 @@ export class AdminRepositoryImpl {
       .single();
     if (errSem) throw new Error(`Error al crear semestre: ${errSem.message}`);
 
-    // Paso 3: limpiar datos del semestre anterior
-    // Las fallas se borran para TODOS (los admins también reinician su contador)
-    const { error: e1 } = await supabase.from('fallas').delete().not('id', 'is', null);
-    if (e1) throw new Error(`Error borrando fallas: ${e1.message}`);
+    // Paso 3: limpiar datos del semestre anterior.
+    // Los admins solo existen en la tabla 'admins' (separada), NUNCA en usuarios,
+    // info_estudiante, info_empleado, info_contratista ni usuario_roles.
+    // → Se eliminan TODOS los registros de cada tabla sin filtro de exclusión.
+    const borrarTodo = (tabla) =>
+      supabase.from(tabla).delete().not('id_institucional', 'is', null);
 
-    // Helper: borra todo EXCEPTO los admins
-    const borrarExcAdmins = (tabla) => {
-      let q = supabase.from(tabla).delete();
-      if (adminIds.length === 0) return q.not('id_institucional', 'is', null);
-      // Supabase PostgREST: NOT IN (id1,id2,...)
-      return q.not('id_institucional', 'in', `(${adminIds.join(',')})`);
-    };
-
-    const [r2, r3, r4] = await Promise.all([
-      borrarExcAdmins('info_estudiante'),
-      borrarExcAdmins('info_empleado'),
-      borrarExcAdmins('info_contratista'),
+    const [r1, r2, r3, r4, r5, r6] = await Promise.all([
+      supabase.from('fallas').delete().not('id', 'is', null),
+      borrarTodo('info_estudiante'),
+      borrarTodo('info_empleado'),
+      borrarTodo('info_contratista'),
+      borrarTodo('usuario_roles'),
+      borrarTodo('usuarios'),
     ]);
-    const errInfo = r2.error || r3.error || r4.error;
-    if (errInfo) throw new Error(`Error borrando info de roles: ${errInfo.message}`);
 
-    const { error: e5 } = await borrarExcAdmins('usuario_roles');
-    if (e5) throw new Error(`Error borrando usuario_roles: ${e5.message}`);
-
-    const { error: e6 } = await borrarExcAdmins('usuarios');
-    if (e6) throw new Error(`Error borrando usuarios: ${e6.message}`);
+    const errLimpieza = r1.error || r2.error || r3.error || r4.error || r5.error || r6.error;
+    if (errLimpieza) throw new Error(`Error limpiando datos del semestre: ${errLimpieza.message}`);
 
     return nuevoSem;
   }
@@ -624,6 +693,19 @@ export class AdminRepositoryImpl {
       if (error.code === '23505') throw new Error('Este ID ya tiene perfil de administrador.');
       throw new Error(error.message);
     }
+  }
+
+  // ─── Cambiar contraseña de un administrador ────────────────────────────────
+  /**
+   * Solo el superadmin puede cambiar la contraseña de cualquier admin.
+   */
+  async cambiarContrasenaAdmin(id_institucional, nuevaContrasena) {
+    const hash = await bcrypt.hash(nuevaContrasena, 12);
+    const { error } = await supabase
+      .from('admins')
+      .update({ contrasena_hash: hash })
+      .eq('id_institucional', id_institucional);
+    if (error) throw new Error(error.message);
   }
 
   // ─── Eliminar administrador ────────────────────────────────────────────────

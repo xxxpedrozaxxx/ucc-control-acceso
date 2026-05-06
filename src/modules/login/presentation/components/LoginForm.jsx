@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useLogin } from '../../application/hooks/useLogin';
 import { useNavigate } from 'react-router-dom';
+import { PantallaBloqueo } from '../../../../shared/components/PantallaBloqueo';
 
 /**
  * Componente del formulario de login
  */
 export const LoginForm = () => {
   const [idInstitucional, setIdInstitucional] = useState('');
+  const [bloqueado, setBloqueado] = useState(false);
   const { loading, error, validateId, clearError } = useLogin();
   const navigate = useNavigate();
 
@@ -17,8 +19,9 @@ export const LoginForm = () => {
     const result = await validateId(idInstitucional);
 
     if (result.success) {
-      // Redirigir a la ficha técnica del usuario
       navigate('/user-profile', { state: { user: result.user } });
+    } else if (result.blocked) {
+      setBloqueado(true);
     }
   };
 
@@ -32,14 +35,15 @@ export const LoginForm = () => {
 
   return (
     <div className="w-full max-w-md mx-auto p-6">
+      {bloqueado && <PantallaBloqueo onAction={() => window.location.reload()} actionLabel="Recargar página" />}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Mensaje instructivo */}
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Ingrese su ID Institucional
+             Sistema de Control de Acceso 
           </h2>
           <p className="text-sm text-gray-600">
-            Este sistema es solo para usuarios que NO portan su carnet físico
+            Este sistema es solo para usuarios que NO portan su carnet
           </p>
         </div>
 
@@ -49,7 +53,7 @@ export const LoginForm = () => {
             htmlFor="idInstitucional" 
             className="block text-sm font-medium text-gray-700 mb-2 text-center"
           >
-            ID Institucional
+            Digite su ID 
           </label>
           <input
             id="idInstitucional"
@@ -58,7 +62,7 @@ export const LoginForm = () => {
             pattern="\d*"
             value={idInstitucional}
             onChange={handleInputChange}
-            placeholder="Ej: 80123456"
+            placeholder="Ej: 000000"
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition-colors text-lg text-center"
             disabled={loading}
             required
@@ -102,7 +106,7 @@ export const LoginForm = () => {
 
         {/* Información adicional */}
         <div className="text-center text-xs text-gray-500 mt-4">
-          <p> Solo para ingresos contingentes sin carnet</p>
+          <p> Solo para ingresos sin carnet</p>
         </div>
       </form>
     </div>

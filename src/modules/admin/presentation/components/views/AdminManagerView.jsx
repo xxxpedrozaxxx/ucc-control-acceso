@@ -150,6 +150,107 @@ const ModalCrearAdmin = ({ onConfirmar, onCancelar }) => {
   );
 };
 
+// ─── Modal: Cambiar contraseña ────────────────────────────────────────────
+const ModalCambiarContrasena = ({ admin, onConfirmar, onCancelar }) => {
+  const [nueva,    setNueva]    = useState('');
+  const [confirmar, setConfirmar] = useState('');
+  const [error,    setError]    = useState('');
+  const [cargando, setCargando] = useState(false);
+  const [ok,       setOk]       = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    if (nueva.length < 8) return setError('La contraseña debe tener al menos 8 caracteres.');
+    if (nueva !== confirmar) return setError('Las contraseñas no coinciden.');
+    setCargando(true);
+    try {
+      await onConfirmar(admin.id_institucional, nueva);
+      setOk(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+        {ok ? (
+          <div className="text-center py-4">
+            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
+              <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+              </svg>
+            </div>
+            <p className="text-base font-bold text-gray-800 mb-1">Contraseña actualizada</p>
+            <p className="text-sm text-gray-500 mb-5">
+              La contraseña de <span className="font-semibold">{admin.nombre_completo}</span> fue cambiada.
+            </p>
+            <button onClick={onCancelar} className="w-full bg-ucc-green text-white rounded-lg py-2.5 text-sm font-medium hover:bg-ucc-green-dark transition-colors">
+              Cerrar
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-full bg-ucc-green/10 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-ucc-green" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-gray-800">Cambiar contraseña</h3>
+                <p className="text-xs text-gray-500">{admin.nombre_completo} · {admin.id_institucional}</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nueva contraseña</label>
+                <input
+                  type="password"
+                  value={nueva}
+                  onChange={e => setNueva(e.target.value)}
+                  placeholder="Mínimo 8 caracteres"
+                  autoFocus
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ucc-green/30 focus:border-ucc-green"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar contraseña</label>
+                <input
+                  type="password"
+                  value={confirmar}
+                  onChange={e => setConfirmar(e.target.value)}
+                  placeholder="Repite la contraseña"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ucc-green/30 focus:border-ucc-green"
+                />
+              </div>
+
+              {error && (
+                <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+              )}
+
+              <div className="flex gap-3 pt-1">
+                <button type="button" onClick={onCancelar} disabled={cargando}
+                  className="flex-1 border border-gray-200 text-gray-600 rounded-lg py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors">
+                  Cancelar
+                </button>
+                <button type="submit" disabled={cargando}
+                  className="flex-1 bg-ucc-green text-white rounded-lg py-2.5 text-sm font-medium hover:bg-ucc-green-dark transition-colors disabled:opacity-60">
+                  {cargando ? 'Guardando...' : 'Guardar cambios'}
+                </button>
+              </div>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // ─── Modal: Confirmar eliminación ──────────────────────────────────────────
 const ModalEliminar = ({ admin, onConfirmar, onCancelar }) => {
   const [cargando, setCargando] = useState(false);
@@ -199,10 +300,11 @@ const ModalEliminar = ({ admin, onConfirmar, onCancelar }) => {
 
 // ─── Vista principal ───────────────────────────────────────────────────────
 export const AdminManagerView = ({ sesionActual }) => {
-  const { admins, cargando, error, crearAdmin, eliminarAdmin, refrescar } = useAdminManager();
-  const [modalCrear,   setModalCrear]   = useState(false);
-  const [adminAElim,   setAdminAElim]   = useState(null);
-  const [feedback,     setFeedback]     = useState(null); // { tipo: 'ok'|'error', msg }
+  const { admins, cargando, error, crearAdmin, eliminarAdmin, cambiarContrasenaAdmin, refrescar } = useAdminManager();
+  const [modalCrear,      setModalCrear]      = useState(false);
+  const [adminAElim,      setAdminAElim]      = useState(null);
+  const [adminACambiarPass, setAdminACambiarPass] = useState(null);
+  const [feedback,        setFeedback]        = useState(null); // { tipo: 'ok'|'error', msg }
 
   const mostrarFeedback = (tipo, msg) => {
     setFeedback({ tipo, msg });
@@ -221,6 +323,10 @@ export const AdminManagerView = ({ sesionActual }) => {
     mostrarFeedback('ok', 'Acceso de administrador eliminado.');
   };
 
+  const handleCambiarContrasena = async (id_institucional, nuevaContrasena) => {
+    await cambiarContrasenaAdmin(id_institucional, nuevaContrasena);
+  };
+
   return (
     <>
       {/* Modales */}
@@ -228,6 +334,13 @@ export const AdminManagerView = ({ sesionActual }) => {
         <ModalCrearAdmin
           onConfirmar={handleCrear}
           onCancelar={() => setModalCrear(false)}
+        />
+      )}
+      {adminACambiarPass && (
+        <ModalCambiarContrasena
+          admin={adminACambiarPass}
+          onConfirmar={handleCambiarContrasena}
+          onCancelar={() => setAdminACambiarPass(null)}
         />
       )}
       {adminAElim && (
@@ -357,16 +470,25 @@ export const AdminManagerView = ({ sesionActual }) => {
                           : <span className="text-gray-300">Nunca</span>}
                       </td>
                       <td className="px-5 py-3.5">
-                        {esSuperAdmin ? (
-                          <span className="text-xs text-gray-300 select-none">Protegido</span>
-                        ) : (
+                        <div className="flex items-center gap-3">
                           <button
-                            onClick={() => setAdminAElim(admin)}
-                            className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors"
+                            onClick={() => setAdminACambiarPass(admin)}
+                            className="p-1.5 text-ucc-cyan-dark hover:text-ucc-cyan hover:bg-cyan-50 rounded-lg transition-colors"
+                            title="Cambiar contraseña"
                           >
-                            Eliminar
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                            </svg>
                           </button>
-                        )}
+                          {!esSuperAdmin && (
+                            <button
+                              onClick={() => setAdminAElim(admin)}
+                              className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors"
+                            >
+                              Eliminar
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );

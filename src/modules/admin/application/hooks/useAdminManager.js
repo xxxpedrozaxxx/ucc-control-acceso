@@ -35,7 +35,11 @@ export const useAdminManager = () => {
     await cargar();
   };
 
+  const cambiarContrasenaAdmin = async (id_institucional, nuevaContrasena) => {
+    await repo.cambiarContrasenaAdmin(id_institucional, nuevaContrasena);
+  };
+
   useEffect(() => { cargar(); }, [cargar]);
 
-  return { admins, cargando, error, crearAdmin, eliminarAdmin, refrescar: cargar };
+  return { admins, cargando, error, crearAdmin, eliminarAdmin, cambiarContrasenaAdmin, refrescar: cargar };
 };
