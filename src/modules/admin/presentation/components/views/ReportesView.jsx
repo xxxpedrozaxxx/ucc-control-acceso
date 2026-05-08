@@ -166,6 +166,32 @@ export const ReportesView = ({ reporte, loading, periodo = 'semanal', offset = 0
     try {
       const wb = XLSX.utils.book_new();
 
+      // Hoja 0: Guía de contenido
+      const wsGuia = XLSX.utils.aoa_to_sheet([
+        ['GUÍA DE CONTENIDO — Informe de Control de Acceso UCC'],
+        ['Período:', etiqueta],
+        [],
+        ['Hoja', 'Qué contiene', 'Nota importante'],
+        ['Resumen', 'Totales generales: personas registradas y fallas del período.', ''],
+        ['Fallas por día', 'Cuántas fallas hubo cada día del período.', ''],
+        ['Fallas por día Detalle', 'Una fila por cada falla: quién fue, su ID y si es estudiante/empleado/contratista.', ''],
+        ['Por programa', 'Cuántos estudiantes hay registrados en cada programa académico.', 'Incluye TODOS los estudiantes del semestre, no solo los que fallaron.'],
+        ['Por programa Detalle', 'Lista completa de estudiantes registrados este semestre con su programa.', 'Incluye TODOS los estudiantes del semestre, no solo los que fallaron.'],
+        ['Por dependencia', 'Cuántos empleados hay registrados en cada dependencia.', 'Incluye TODOS los empleados del semestre, no solo los que fallaron.'],
+        ['Por dependencia Detalle', 'Lista completa de empleados registrados este semestre con su dependencia.', 'Incluye TODOS los empleados del semestre, no solo los que fallaron.'],
+        ['Por empresa', 'Cuántos contratistas hay registrados en cada empresa.', 'Incluye TODOS los contratistas del semestre, no solo los que fallaron.'],
+        ['Por empresa Detalle', 'Lista completa de contratistas registrados este semestre con su empresa.', 'Incluye TODOS los contratistas del semestre, no solo los que fallaron.'],
+        ['Fallas por programa', 'Qué programas académicos acumularon más fallas en el período.', 'Solo aparecen programas donde hubo al menos una falla.'],
+        ['Fallas por prog. Detalle', 'Estudiantes que fallaron: cuántas veces y en qué programa.', 'Solo aparecen estudiantes que tuvieron al menos una falla.'],
+        ['Fallas por dependencia', 'Qué dependencias acumularon más fallas en el período.', 'Solo aparecen dependencias donde hubo al menos una falla.'],
+        ['Fallas por dep. Detalle', 'Empleados que fallaron: cuántas veces y en qué dependencia.', 'Solo aparecen empleados que tuvieron al menos una falla.'],
+        ['Fallas por empresa', 'Qué empresas contratistas acumularon más fallas en el período.', 'Solo aparecen empresas donde hubo al menos una falla.'],
+        ['Fallas por emp. Detalle', 'Contratistas que fallaron: cuántas veces y en qué empresa.', 'Solo aparecen contratistas que tuvieron al menos una falla.'],
+        ['Personas con fallas', 'Lista consolidada de TODAS las personas que tuvieron al menos una falla en el período.', 'Incluye estudiantes, empleados y contratistas juntos.'],
+      ]);
+      wsGuia['!cols'] = [{ wch: 28 }, { wch: 65 }, { wch: 60 }];
+      XLSX.utils.book_append_sheet(wb, wsGuia, 'Guía');
+
       // Hoja 1: Resumen general
       const wsResumen = XLSX.utils.aoa_to_sheet([
         ['Informe de Control de Acceso UCC'],
