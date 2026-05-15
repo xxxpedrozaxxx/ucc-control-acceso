@@ -1,0 +1,540 @@
+\documentclass[12pt, a4paper]{article}
+
+% ---------------------------------------------------------------
+% Paquetes
+% ---------------------------------------------------------------
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[skins, breakable]{tcolorbox}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{parskip}
+
+% ---------------------------------------------------------------
+% Colores institucionales
+% ---------------------------------------------------------------
+\definecolor{uccazul}{RGB}{0, 70, 127}
+\definecolor{uccgris}{RGB}{80, 80, 80}
+\definecolor{alertanaranja}{RGB}{230, 126, 34}
+\definecolor{okverde}{RGB}{39, 174, 96}
+\definecolor{codegris}{RGB}{245, 245, 245}
+
+% ---------------------------------------------------------------
+% Estilo de código
+% ---------------------------------------------------------------
+\lstset{
+  backgroundcolor=\color{codegris},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  framesep=5pt,
+  rulecolor=\color{gray!40},
+  xleftmargin=10pt,
+  xrightmargin=10pt,
+}
+
+% ---------------------------------------------------------------
+% Cajas de aviso
+% ---------------------------------------------------------------
+\newtcolorbox{importante}{
+  colback=alertanaranja!10, colframe=alertanaranja,
+  title={\bfseries Importante}, fonttitle=\bfseries,
+  breakable
+}
+\newtcolorbox{nota}{
+  colback=uccazul!8, colframe=uccazul,
+  title={\bfseries Nota}, fonttitle=\bfseries,
+  breakable
+}
+\newtcolorbox{exito}{
+  colback=okverde!10, colframe=okverde,
+  title={\bfseries Correcto}, fonttitle=\bfseries,
+  breakable
+}
+
+% ---------------------------------------------------------------
+% Encabezado y pie de página
+% ---------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\color{uccgris}\small Sistema de Control de Acceso UCC}
+\fancyhead[R]{\color{uccgris}\small Manual de Instalación}
+\fancyfoot[C]{\color{uccgris}\small \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------------------------------------------------------------
+% Títulos de sección
+% ---------------------------------------------------------------
+\titleformat{\section}
+  {\Large\bfseries\color{uccazul}}{\thesection.}{0.5em}{}[\titlerule]
+\titleformat{\subsection}
+  {\large\bfseries\color{uccazul!80}}{\thesubsection.}{0.5em}{}
+
+% ---------------------------------------------------------------
+% Hipervínculos
+% ---------------------------------------------------------------
+\hypersetup{
+  colorlinks=true,
+  linkcolor=uccazul,
+  urlcolor=uccazul,
+  pdftitle={Manual de Instalacion - UCC Control de Acceso},
+  pdfauthor={Corporacion Universitaria Comfacauca}
+}
+
+% ---------------------------------------------------------------
+% Documento
+% ---------------------------------------------------------------
+\begin{document}
+
+% === Portada ===
+\begin{titlepage}
+  \centering
+  \vspace*{3cm}
+  {\color{uccazul}\rule{\textwidth}{2pt}}\\[1em]
+  {\Huge\bfseries\color{uccazul} Sistema de Control de Acceso}\\[0.5em]
+  {\LARGE\color{uccgris} Corporación Universitaria Comfacauca}\\[0.5em]
+  {\color{uccazul}\rule{\textwidth}{2pt}}\\[2em]
+
+  {\Large\bfseries Manual de Instalación en Equipo Nuevo}\\[0.5em]
+  {\large\color{uccgris} Versión 1.0 — 2026}
+
+  \vfill
+  {\color{uccgris}
+    \textbf{Para uso del personal técnico o administrativo.}\\
+    No se requieren conocimientos de programación.
+  }
+  \vspace{2cm}
+\end{titlepage}
+
+% === Tabla de contenidos ===
+\tableofcontents
+\newpage
+
+% ===============================================================
+\section{Introducción}
+% ===============================================================
+
+El Sistema de Control de Acceso UCC permite registrar y verificar
+el ingreso de estudiantes, empleados y contratistas a las instalaciones
+de la universidad. El sistema funciona en una red WiFi local y es
+accesible desde cualquier computador o celular conectado a esa red.
+
+\subsection{Arquitectura del sistema}
+
+El sistema consta de cuatro componentes que deben estar ejecutándose
+simultáneamente:
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+  \toprule
+  \textbf{Componente} & \textbf{Puerto} & \textbf{Función} \\
+  \midrule
+  PostgreSQL  & 5432 & Base de datos (instala como servicio de Windows) \\
+  PostgREST   & 3001 & API REST sobre PostgreSQL \\
+  Proxy       & 3000 & Intermediario con manejo de CORS \\
+  Frontend    & 80   & Interfaz web accesible por navegador \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+PostgreSQL se inicia automáticamente con Windows. Los otros tres
+componentes los arranca el archivo \texttt{INICIAR.bat}.
+
+% ===============================================================
+\section{Requisitos previos}
+% ===============================================================
+
+Antes de instalar el sistema, el equipo debe tener instalados
+los siguientes programas. Ambos son gratuitos.
+
+\subsection{PostgreSQL 18}
+
+\begin{enumerate}
+  \item Descarga el instalador desde:\\
+        \url{https://www.postgresql.org/download/windows/}
+  \item Selecciona la versión \textbf{18.x} para Windows x86-64.
+  \item Ejecuta el instalador. Cuando pida contraseña para el usuario
+        \texttt{postgres}, anótala; la necesitarás en el paso 5 de la
+        instalación del sistema.
+  \item Deja marcado el componente \textbf{PostgreSQL Server}.
+        El puerto por defecto (5432) no debe cambiarse.
+  \item Finaliza la instalación. Al terminar, selecciona
+        \emph{"No lanzar Stack Builder"}.
+\end{enumerate}
+
+\begin{importante}
+  Recuerda la contraseña que defines para el usuario \texttt{postgres}.
+  Si la olvidas, deberás reinstalar PostgreSQL.
+\end{importante}
+
+\subsection{Node.js LTS}
+
+\begin{enumerate}
+  \item Descarga el instalador desde:\\
+        \url{https://nodejs.org/}
+  \item Selecciona la versión \textbf{LTS} (la recomendada).
+  \item Ejecuta el instalador con las opciones por defecto.
+  \item En la pantalla de \emph{"Tools for Native Modules"}, NO es
+        necesario marcar la casilla adicional.
+\end{enumerate}
+
+\subsection{PostgREST (archivo .exe)}
+
+\begin{enumerate}
+  \item Descarga el archivo ZIP desde:\\
+        \url{https://github.com/PostgREST/postgrest/releases/tag/v12.2.0}
+  \item Busca el archivo: \texttt{postgrest-v12.2.0-windows-x86-64.zip}
+  \item Ábrelo y extrae el archivo \texttt{postgrest.exe}.
+  \item \textbf{No lo copies aún} — el asistente de configuración te indicará
+        la carpeta exacta donde colocarlo en el paso 3 de la instalación.
+\end{enumerate}
+
+% ===============================================================
+\section{Instalación del sistema}
+% ===============================================================
+
+\subsection{Obtener los archivos del sistema}
+
+Los archivos del sistema se entregan como una carpeta comprimida
+(\texttt{ucc-control-acceso.zip}) o directamente como carpeta.
+Copia esta carpeta a una ubicación estable en el equipo, por ejemplo:
+
+\begin{lstlisting}
+C:\ucc-control-acceso\
+\end{lstlisting}
+
+\begin{importante}
+  No pongas la carpeta en el Escritorio si el usuario del equipo cambia.
+  Prefiere \texttt{C:\textbackslash{}ucc-control-acceso\textbackslash{}} o
+  \texttt{C:\textbackslash{}Sistemas\textbackslash{}ucc-control-acceso\textbackslash{}}.
+\end{importante}
+
+La estructura de la carpeta debe verse así:
+
+\begin{lstlisting}
+ucc-control-acceso\
+  CONFIGURAR.bat        <- ejecutar primero (solo una vez)
+  INICIAR.bat           <- ejecutar cada dia
+  postgrest\
+    proxy.js
+    postgrest.exe       <- lo copias aqui en el paso 3
+  database\
+    supabase\
+      *.sql
+  dist\
+    index.html
+    ...
+\end{lstlisting}
+
+\subsection{Ejecutar el asistente de configuración}
+
+\begin{enumerate}
+  \item Abre la carpeta del sistema en el Explorador de archivos.
+  \item Haz \textbf{clic derecho} sobre el archivo \texttt{CONFIGURAR.bat}.
+  \item Selecciona \textbf{"Ejecutar como administrador"}.
+  \item Se abrirá una ventana negra. Sigue las instrucciones en pantalla.
+\end{enumerate}
+
+\medskip
+El asistente realiza los siguientes pasos automáticamente:
+
+\begin{enumerate}[label=\textbf{[\arabic*]}]
+  \item Verifica que Node.js y PostgreSQL estén instalados.
+  \item Verifica que \texttt{postgrest.exe} esté en la carpeta correcta.
+        Si no está, te indica dónde copiarlo y espera.
+  \item Instala el servidor de archivos web (\texttt{serve}).
+  \item Crea la base de datos y el usuario del sistema en PostgreSQL.
+        Te pedirá la contraseña de \texttt{postgres} que definiste al
+        instalar PostgreSQL.
+  \item Crea todas las tablas y carga el esquema inicial.
+  \item Configura PostgREST y copia los archivos necesarios.
+  \item Abre los puertos en el firewall de Windows (80, 3000, 3001).
+  \item Crea un acceso directo en el Escritorio.
+\end{enumerate}
+
+\begin{exito}
+  Al finalizar, el asistente muestra la dirección IP del equipo.
+  Guarda esa dirección para generar el código QR.
+\end{exito}
+
+% ===============================================================
+\section{Uso diario — Iniciar el sistema}
+% ===============================================================
+
+Cada vez que se encienda el equipo, el sistema debe iniciarse
+manualmente. PostgreSQL arranca automáticamente con Windows, pero
+los demás componentes deben lanzarse con el \texttt{INICIAR.bat}.
+
+\subsection{Procedimiento}
+
+\begin{enumerate}
+  \item Busca el acceso directo \textbf{"Iniciar UCC Control"} en el
+        Escritorio (lo crea el asistente de configuración).
+  \item Haz \textbf{clic derecho} $\rightarrow$ \textbf{"Ejecutar como administrador"}.
+  \item Se abre una ventana negra que muestra las direcciones del sistema.
+  \item Deja esa ventana abierta mientras el sistema está en uso.
+  \item Para \textbf{detener} el sistema, cierra esa ventana.
+\end{enumerate}
+
+\begin{importante}
+  No cierres la ventana del sistema mientras haya usuarios conectados.
+  Al cerrarla, el sistema queda inaccesible hasta que vuelvas a ejecutar
+  \texttt{INICIAR.bat}.
+\end{importante}
+
+\subsection{Verificar que el sistema está funcionando}
+
+Abre un navegador en el mismo equipo y entra a:
+
+\begin{lstlisting}
+http://localhost
+\end{lstlisting}
+
+Debe cargarse la pantalla de inicio del sistema. Si aparece un error,
+revisa la sección~\ref{sec:problemas} de este manual.
+
+% ===============================================================
+\section{Configurar dirección IP fija}
+\label{sec:ipfija}
+% ===============================================================
+
+La dirección IP del equipo puede cambiar cada vez que se reconecta
+a la red WiFi. Esto haría inválido el código QR. Para evitarlo,
+configura una IP estática.
+
+\subsection{Opción A — IP fija desde Windows (recomendada si no hay soporte de red)}
+
+\begin{enumerate}
+  \item Presiona \texttt{Win + X} y abre \textbf{Terminal (Administrador)}
+        o \textbf{PowerShell (Administrador)}.
+  \item Ejecuta estos tres comandos (reemplaza los valores por los de
+        tu red si son diferentes):
+\end{enumerate}
+
+\begin{lstlisting}
+netsh interface ip set address name="Wi-Fi" static 192.168.44.216 255.255.252.0 192.168.44.1
+netsh interface ip set dns name="Wi-Fi" static 8.8.8.8
+netsh interface ip add dns name="Wi-Fi" 8.8.4.4 index=2
+\end{lstlisting}
+
+\begin{nota}
+  Los tres valores del primer comando son:
+  \begin{itemize}
+    \item \textbf{192.168.44.216} — IP que quieres fijar (la que el equipo
+          tenía cuando configuraste el sistema).
+    \item \textbf{255.255.252.0} — Máscara de subred (no cambiar si la red
+          es la del campus).
+    \item \textbf{192.168.44.1} — Puerta de enlace (el router del campus).
+  \end{itemize}
+  Para verificar la IP actual del equipo, ejecuta \texttt{ipconfig} en una
+  terminal y busca la línea \emph{Dirección IPv4} del adaptador Wi-Fi.
+\end{nota}
+
+\subsection{Opción B — Reserva DHCP en el router (solución institucional)}
+
+Solicita al administrador de red de la universidad que reserve la
+dirección IP para la MAC del equipo. Proporciona los siguientes datos:
+
+\begin{lstlisting}
+MAC del equipo  : B0-35-9F-9C-7E-4E
+IP a reservar   : 192.168.44.216  (o la IP disponible que asignen)
+Descripcion     : PC Control Acceso UCC
+\end{lstlisting}
+
+Para obtener la MAC de otro equipo, ejecuta en una terminal:
+\begin{lstlisting}
+getmac /v
+\end{lstlisting}
+
+% ===============================================================
+\section{Generar el código QR}
+% ===============================================================
+
+El código QR permite a los usuarios acceder al portal de registro
+desde sus celulares, sin necesidad de escribir la dirección.
+
+\subsection{URL del portal de usuario}
+
+\begin{lstlisting}
+http://<IP-DEL-EQUIPO>/login
+\end{lstlisting}
+
+Por ejemplo, si la IP es \texttt{192.168.44.216}:
+\begin{lstlisting}
+http://192.168.44.216/login
+\end{lstlisting}
+
+\subsection{Cómo generar el QR}
+
+\begin{enumerate}
+  \item Abre cualquier navegador en cualquier equipo.
+  \item Ve a \url{https://qr.io} o \url{https://www.qrcode-monkey.com/es/}
+  \item Ingresa la URL del portal: \texttt{http://192.168.44.216/login}
+  \item Descarga o imprime el QR generado.
+\end{enumerate}
+
+\begin{importante}
+  El código QR solo funciona desde dispositivos conectados a la red
+  WiFi del campus. No funciona desde fuera del campus.
+  Si la IP del equipo cambia, el QR queda inválido. Configura IP fija
+  (sección~\ref{sec:ipfija}) para que el QR sea permanente.
+\end{importante}
+
+% ===============================================================
+\section{Panel de administración}
+% ===============================================================
+
+\subsection{Acceso}
+
+El panel de administración es exclusivo para administradores del sistema:
+
+\begin{lstlisting}
+http://localhost/admin-login
+http://<IP-DEL-EQUIPO>/admin-login
+\end{lstlisting}
+
+\subsection{Credenciales por defecto}
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+  \toprule
+  \textbf{Campo} & \textbf{Valor} \\
+  \midrule
+  ID institucional & 000000 \\
+  Contraseña & 12345678 \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\begin{importante}
+  Cambia la contraseña por defecto después del primer ingreso.
+  Estas credenciales son conocidas por el instalador del sistema.
+\end{importante}
+
+\subsection{Funciones disponibles}
+
+Desde el panel de administración se puede:
+\begin{itemize}
+  \item Ver los registros de acceso en tiempo real.
+  \item Gestionar usuarios (estudiantes, empleados, contratistas).
+  \item Crear y gestionar administradores adicionales.
+  \item Gestionar semestres académicos.
+  \item Exportar reportes.
+\end{itemize}
+
+% ===============================================================
+\section{Solución de problemas}
+\label{sec:problemas}
+% ===============================================================
+
+\subsection{El navegador muestra "Esta página no está disponible"}
+
+El sistema no está iniciado. Ejecuta \texttt{INICIAR.bat} como
+administrador y espera unos segundos antes de recargar el navegador.
+
+\subsection{Aparece un error "502 Bad Gateway"}
+
+PostgREST no está corriendo. Esto puede ocurrir si:
+\begin{itemize}
+  \item El sistema se inició pero PostgREST tardó en arrancar. Espera
+        5 segundos y recarga.
+  \item PostgreSQL no está activo. Ve a \textbf{Servicios de Windows}
+        (presiona \texttt{Win + R}, escribe \texttt{services.msc}) y
+        verifica que el servicio \textbf{postgresql-x64-18} esté en
+        estado \emph{En ejecución}.
+\end{itemize}
+
+\subsection{El login dice "Credenciales incorrectas" pero la contraseña es correcta}
+
+Verifica que el sistema esté completamente iniciado (los tres procesos:
+PostgREST, proxy y frontend). Cierra el \texttt{INICIAR.bat} y
+ejecútalo nuevamente.
+
+\subsection{Otros equipos no pueden acceder}
+
+\begin{enumerate}
+  \item Verifica que estén en la misma red WiFi del campus.
+  \item Confirma que el firewall esté configurado: ejecuta
+        \texttt{CONFIGURAR.bat} nuevamente (es seguro ejecutarlo más de
+        una vez) para que reconfiguré las reglas.
+  \item Asegúrate de estar usando la IP correcta del equipo servidor.
+        Abre una terminal en el equipo servidor y ejecuta \texttt{ipconfig}.
+\end{enumerate}
+
+\subsection{Cómo reiniciar completamente el sistema}
+
+\begin{enumerate}
+  \item Cierra la ventana de \texttt{INICIAR.bat} si está abierta.
+  \item Vuelve a ejecutar \texttt{INICIAR.bat} como administrador.
+\end{enumerate}
+
+% ===============================================================
+\section{Carga masiva de usuarios}
+% ===============================================================
+
+Para cargar listas de estudiantes, empleados o contratistas de forma
+masiva, el sistema acepta archivos CSV con un formato específico.
+
+Los archivos de ejemplo se encuentran en:
+\begin{lstlisting}
+database\
+  test_estudiantes.csv
+  test_empleados.csv
+  test_contratistas.csv
+  ejemplo_carga_semestral.csv
+\end{lstlisting}
+
+Consulta el archivo \texttt{database\textbackslash{}README\_DATABASE.md} para
+ver el formato exacto de cada columna.
+
+% ===============================================================
+\section{Respaldo de la base de datos}
+% ===============================================================
+
+Se recomienda hacer un respaldo periódico de la base de datos para
+no perder los registros de acceso.
+
+\subsection{Crear un respaldo}
+
+Abre una terminal (\textbf{no} es necesario ejecutar como administrador)
+y ejecuta:
+
+\begin{lstlisting}
+"C:\Program Files\PostgreSQL\18\bin\pg_dump" -U postgres -d ucc_control -f respaldo.sql
+\end{lstlisting}
+
+Esto crea el archivo \texttt{respaldo.sql} en la carpeta actual.
+Cópialo a un USB o carpeta segura.
+
+\subsection{Restaurar un respaldo}
+
+\begin{lstlisting}
+"C:\Program Files\PostgreSQL\18\bin\psql" -U postgres -d ucc_control -f respaldo.sql
+\end{lstlisting}
+
+% ===============================================================
+\section{Contacto y soporte}
+% ===============================================================
+
+Este sistema fue desarrollado para la Corporación Universitaria
+Comfacauca. Para soporte técnico, contactar al área de sistemas
+o al desarrollador original del proyecto.
+
+\vspace{1cm}
+\begin{center}
+  {\color{uccazul}\rule{0.5\textwidth}{0.5pt}}\\[0.5em]
+  {\small\color{uccgris}
+    Sistema de Control de Acceso UCC — Manual de Instalación v1.0 \\
+    Corporación Universitaria Comfacauca, 2026
+  }
+\end{center}
+
+\end{document}

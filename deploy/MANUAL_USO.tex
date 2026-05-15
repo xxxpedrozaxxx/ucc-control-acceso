@@ -1,0 +1,841 @@
+\documentclass[12pt, a4paper]{article}
+
+% ---------------------------------------------------------------
+% Paquetes
+% ---------------------------------------------------------------
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[skins, breakable]{tcolorbox}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{parskip}
+\usepackage{array}
+\usepackage{tabularx}
+
+% ---------------------------------------------------------------
+% Colores
+% ---------------------------------------------------------------
+\definecolor{uccazul}{RGB}{0, 70, 127}
+\definecolor{uccgris}{RGB}{80, 80, 80}
+\definecolor{uccverde}{RGB}{22, 163, 74}
+\definecolor{alertanaranja}{RGB}{230, 126, 34}
+\definecolor{alertarojo}{RGB}{220, 38, 38}
+\definecolor{codegris}{RGB}{245, 245, 245}
+\definecolor{amarillo}{RGB}{202, 138, 4}
+
+% ---------------------------------------------------------------
+% Cajas
+% ---------------------------------------------------------------
+\newtcolorbox{aviso}{
+  colback=alertanaranja!10, colframe=alertanaranja,
+  title={\bfseries Importante}, fonttitle=\bfseries,
+  breakable
+}
+\newtcolorbox{nota}{
+  colback=uccazul!8, colframe=uccazul,
+  title={\bfseries Nota}, fonttitle=\bfseries,
+  breakable
+}
+\newtcolorbox{tip}{
+  colback=uccverde!8, colframe=uccverde,
+  title={\bfseries Consejo}, fonttitle=\bfseries,
+  breakable
+}
+\newtcolorbox{peligro}{
+  colback=alertarojo!8, colframe=alertarojo,
+  title={\bfseries Atención}, fonttitle=\bfseries,
+  breakable
+}
+
+% ---------------------------------------------------------------
+% Código
+% ---------------------------------------------------------------
+\lstset{
+  backgroundcolor=\color{codegris},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  framesep=5pt,
+  rulecolor=\color{gray!40},
+  xleftmargin=10pt,
+  xrightmargin=10pt,
+}
+
+% ---------------------------------------------------------------
+% Encabezado y pie
+% ---------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\color{uccgris}\small Sistema de Control de Acceso UCC}
+\fancyhead[R]{\color{uccgris}\small Manual de Uso}
+\fancyfoot[C]{\color{uccgris}\small \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------------------------------------------------------------
+% Títulos
+% ---------------------------------------------------------------
+\titleformat{\section}
+  {\Large\bfseries\color{uccazul}}{\thesection.}{0.5em}{}[\titlerule]
+\titleformat{\subsection}
+  {\large\bfseries\color{uccazul!80}}{\thesubsection.}{0.5em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{uccgris}}{\thesubsubsection.}{0.5em}{}
+
+% ---------------------------------------------------------------
+% Hipervínculos
+% ---------------------------------------------------------------
+\hypersetup{
+  colorlinks=true,
+  linkcolor=uccazul,
+  urlcolor=uccazul,
+  pdftitle={Manual de Uso - UCC Control de Acceso},
+  pdfauthor={Corporacion Universitaria Comfacauca}
+}
+
+% ===============================================================
+\begin{document}
+% ===============================================================
+
+% === Portada ===
+\begin{titlepage}
+  \centering
+  \vspace*{2.5cm}
+  {\color{uccazul}\rule{\textwidth}{2.5pt}}\\[1em]
+  {\Huge\bfseries\color{uccazul} Sistema de Control de Acceso}\\[0.6em]
+  {\LARGE\color{uccgris} Corporación Universitaria Comfacauca}\\[0.6em]
+  {\color{uccazul}\rule{\textwidth}{2.5pt}}\\[2em]
+
+  {\Large\bfseries Manual de Uso del Sistema}\\[0.5em]
+  {\large\color{uccgris} Versión 1.0 — 2026}
+
+  \vfill
+
+  \begin{tcolorbox}[colback=uccazul!5, colframe=uccazul!30, width=0.85\textwidth]
+    \centering
+    \small\color{uccgris}
+    Este manual describe cómo usar el sistema tanto desde el
+    \textbf{portal de usuarios} (estudiantes, empleados y contratistas)
+    como desde el \textbf{panel de administración}.\\[0.4em]
+    No se requieren conocimientos técnicos previos.
+  \end{tcolorbox}
+
+  \vspace{2cm}
+  {\color{uccgris}\small Corporación Universitaria Comfacauca, 2026}
+\end{titlepage}
+
+% === Tabla de contenidos ===
+\tableofcontents
+\newpage
+
+% ===============================================================
+\section{¿Qué es este sistema?}
+% ===============================================================
+
+El Sistema de Control de Acceso UCC es una aplicación web que permite
+registrar y verificar quién entra a las instalaciones de la universidad.
+Funciona en la red WiFi del campus: cualquier persona con un celular o
+computador conectado a esa red puede usarlo.
+
+El sistema tiene dos interfaces distintas con propósitos diferentes:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{@{} p{3.5cm} p{5.5cm} p{4.5cm} @{}}
+  \toprule
+  \textbf{Interfaz} & \textbf{Para quién} & \textbf{Cómo acceder} \\
+  \midrule
+  Portal de usuario &
+    Estudiantes, empleados y contratistas que registran su ingreso &
+    Código QR o \texttt{http://[IP]/login} \\[0.4em]
+  Panel de administración &
+    Personal administrativo que gestiona el sistema &
+    \texttt{http://[IP]/admin-login} \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\begin{nota}
+  En este manual, \texttt{[IP]} representa la dirección de red del equipo
+  donde está instalado el sistema (por ejemplo, \texttt{192.168.44.216}).
+  El administrador del sistema debe informarte cuál es esa dirección.
+\end{nota}
+
+% ===============================================================
+\section{Portal de usuario}
+\label{sec:portal}
+% ===============================================================
+
+El portal de usuario es la pantalla que verán los estudiantes,
+empleados y contratistas cuando escaneen el código QR en la entrada
+de la universidad.
+
+\subsection{¿Cómo ingresar?}
+
+Hay dos formas de llegar al portal:
+
+\begin{enumerate}
+  \item \textbf{Código QR}: Escanea el código QR publicado en la entrada
+        con la cámara del celular. Esto abre automáticamente el portal
+        en el navegador.
+
+  \item \textbf{URL directa}: Desde cualquier navegador (Chrome, Firefox,
+        Edge, Safari) conectado a la red WiFi del campus, escribe la
+        dirección del portal:
+        \begin{lstlisting}
+http://[IP]/login
+        \end{lstlisting}
+\end{enumerate}
+
+\subsection{Registrar el ingreso}
+
+Al abrir el portal, verás una pantalla con el logo de la UCC y un campo
+para ingresar tu número de identificación.
+
+\begin{enumerate}
+  \item Escribe tu \textbf{ID institucional} (el número que te asignó la
+        universidad al momento de tu vinculación).
+  \item Presiona el botón \textbf{Ingresar} o la tecla Enter.
+  \item El sistema verifica tu información y muestra el resultado.
+\end{enumerate}
+
+\subsubsection{Resultado exitoso}
+
+Si tu ID es válido y tu cuenta está activa, verás una pantalla de
+confirmación con:
+\begin{itemize}
+  \item Tu nombre completo.
+  \item Tu rol (estudiante, empleado o contratista).
+  \item La hora exacta del registro.
+\end{itemize}
+
+\subsubsection{Resultado con error}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{} p{4.5cm} p{8.5cm} @{}}
+  \toprule
+  \textbf{Mensaje} & \textbf{Qué significa} \\
+  \midrule
+  Usuario no encontrado &
+    El ID no existe en el sistema. Verifica que lo hayas escrito
+    correctamente o contacta a la administración. \\[0.3em]
+  Acceso bloqueado &
+    Tu cuenta ha sido suspendida temporalmente. Debes acercarte
+    a la oficina de atención para resolver la situación. \\[0.3em]
+  Error de conexión &
+    El sistema no está disponible en este momento. Avisa al
+    personal administrativo. \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Reglamento TIP}
+
+En la parte inferior del portal hay un enlace para descargar el
+\textbf{Reglamento TIP} (Resolución Rectoral N° 258 de 2012). Este
+documento describe las normas de convivencia y los motivos por los
+cuales una cuenta puede ser bloqueada.
+
+\begin{aviso}
+  El portal de usuario está diseñado para ser usado desde el celular,
+  pero también funciona desde cualquier computador. No requiere
+  instalar ninguna aplicación.
+\end{aviso}
+
+% ===============================================================
+\section{Panel de administración}
+\label{sec:admin}
+% ===============================================================
+
+El panel de administración es la interfaz con la que el personal
+encargado gestiona el sistema: revisa estadísticas, administra usuarios,
+genera reportes y carga listas de personas al inicio de cada semestre.
+
+\subsection{Acceder al panel}
+
+\begin{enumerate}
+  \item Abre un navegador web en cualquier equipo conectado a la red
+        del campus.
+  \item Escribe la siguiente dirección:
+        \begin{lstlisting}
+http://[IP]/admin-login
+        \end{lstlisting}
+        También puedes acceder desde el mismo equipo donde está el
+        sistema usando:
+        \begin{lstlisting}
+http://localhost/admin-login
+        \end{lstlisting}
+  \item Ingresa tu \textbf{ID institucional} y tu \textbf{contraseña}.
+  \item Presiona \textbf{Ingresar}.
+\end{enumerate}
+
+\begin{nota}
+  Las credenciales del panel de administración son completamente
+  independientes de las del portal de usuario. Tener una cuenta de
+  usuario no te da acceso al panel de administración.
+\end{nota}
+
+\begin{aviso}
+  Si es la primera vez que usas el sistema, las credenciales por
+  defecto son:\\
+  \textbf{ID:} \texttt{000000} \quad \textbf{Contraseña:} \texttt{12345678}\\
+  Cámbialas inmediatamente después del primer ingreso.
+\end{aviso}
+
+\subsection{Niveles de administrador}
+
+El sistema maneja dos niveles de acceso para administradores:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{} p{3cm} p{9.5cm} @{}}
+  \toprule
+  \textbf{Nivel} & \textbf{Permisos} \\
+  \midrule
+  \textbf{Admin} &
+    Puede ver el resumen, gestionar usuarios, cargar CSV,
+    ver informes y generar reportes. \\[0.3em]
+  \textbf{Superadmin} &
+    Todo lo anterior, más la capacidad de crear y eliminar
+    otros administradores del sistema. \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Navegación del panel}
+
+Una vez dentro del panel, verás una barra lateral a la izquierda con
+el menú de navegación. Contiene las siguientes secciones:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{} p{3.5cm} p{9cm} @{}}
+  \toprule
+  \textbf{Sección} & \textbf{Descripción} \\
+  \midrule
+  Resumen         & Dashboard principal con estadísticas y gráficas en tiempo real. \\
+  Usuarios        & Listado completo de personas registradas con búsqueda y filtros. \\
+  Semestre        & Carga masiva de usuarios al inicio de cada período académico. \\
+  Informes        & Generación y exportación de reportes de acceso. \\
+  Administradores & Gestión de cuentas de administrador (solo superadmin). \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+En la parte inferior de la barra lateral hay un indicador del
+\textbf{estado del sistema} que muestra si la base de datos está
+conectada correctamente, y el botón de \textbf{cerrar sesión}.
+
+% ===============================================================
+\section{Sección: Resumen}
+\label{sec:resumen}
+% ===============================================================
+
+La sección de Resumen es la pantalla principal del panel. Muestra
+una fotografía del estado actual del sistema con datos actualizados
+en tiempo real.
+
+\subsection{Tarjetas de estadísticas}
+
+En la parte superior hay ocho tarjetas con los indicadores principales:
+
+\begin{itemize}
+  \item \textbf{Estudiantes}: Total de estudiantes registrados en el semestre activo.
+  \item \textbf{Activos}: Personas con acceso habilitado.
+  \item \textbf{Bloqueados}: Personas con acceso suspendido.
+  \item \textbf{Reportes TIP hoy}: Cantidad de reportes disciplinarios registrados hoy.
+  \item \textbf{Empleados}: Total de empleados registrados.
+  \item \textbf{Contratistas}: Total de contratistas registrados.
+  \item \textbf{Ingresos hoy}: Total de registros de acceso del día actual.
+  \item \textbf{Semestre activo}: Nombre del período académico en curso.
+\end{itemize}
+
+\subsection{Gráficas}
+
+Debajo de las tarjetas aparecen tres visualizaciones:
+
+\begin{enumerate}
+  \item \textbf{Gráfica de dona (Activos vs. Bloqueados)}: Muestra la
+        proporción de usuarios activos frente a los bloqueados, con la
+        tasa de bloqueo expresada en porcentaje.
+
+  \item \textbf{Reportes TIP últimos 7 días}: Barra vertical que muestra
+        cuántos reportes disciplinarios se registraron cada día en la
+        última semana.
+
+  \item \textbf{Distribución por programa}: Barra horizontal que muestra
+        cuántos estudiantes hay en cada programa académico.
+\end{enumerate}
+
+\subsection{Top 5 usuarios con más reportes}
+
+Al final de la sección aparece una lista con los cinco usuarios que
+acumulan más reportes TIP en el semestre. Esto permite identificar
+rápidamente casos que requieren atención.
+
+\subsection{Botón de actualizar}
+
+Las estadísticas no se actualizan solas de forma continua. Para ver
+los datos más recientes, presiona el botón de \textbf{actualizar}
+(ícono de flecha circular) ubicado en la esquina superior derecha
+de la sección.
+
+% ===============================================================
+\section{Sección: Usuarios}
+\label{sec:usuarios}
+% ===============================================================
+
+La sección de Usuarios muestra el listado completo de todas las personas
+registradas en el sistema, con herramientas para buscar, filtrar y
+gestionar el acceso de cada una.
+
+\subsection{Buscar un usuario}
+
+En la parte superior hay una barra de búsqueda. Puedes escribir
+cualquier combinación de:
+\begin{itemize}
+  \item Nombre completo o parte de él.
+  \item ID institucional.
+  \item Rol (estudiante, empleado, contratista).
+  \item Información adicional (programa académico, cargo, empresa).
+\end{itemize}
+
+El listado se filtra en tiempo real mientras escribes.
+Para limpiar la búsqueda, presiona la \textbf{X} al final del campo.
+
+\subsection{Filtrar por estado}
+
+Junto a la barra de búsqueda hay tres botones de filtro rápido:
+
+\begin{itemize}
+  \item \textbf{Todos}: Muestra estudiantes, empleados y contratistas.
+  \item \textbf{Activo}: Solo personas con acceso habilitado.
+  \item \textbf{Bloqueado}: Solo personas con acceso suspendido.
+\end{itemize}
+
+\subsection{Información mostrada por usuario}
+
+Cada fila del listado muestra:
+\begin{itemize}
+  \item Nombre completo e ID institucional.
+  \item Rol (con colores diferenciadores: azul para estudiantes,
+        morado para empleados, naranja para contratistas).
+  \item Estado actual (verde = activo, rojo = bloqueado).
+  \item Información adicional (programa, cargo o empresa según corresponda).
+  \item Cantidad de reportes TIP acumulados.
+\end{itemize}
+
+\subsection{Bloquear o desbloquear un usuario}
+
+Para cambiar el estado de acceso de un usuario:
+
+\begin{enumerate}
+  \item Ubica al usuario en el listado (usa la búsqueda si es necesario).
+  \item Haz clic en el botón de estado que aparece en la columna derecha
+        de esa fila.
+        \begin{itemize}
+          \item Si el usuario está \textbf{activo}, el botón dice
+                \emph{"Bloquear"} en rojo.
+          \item Si está \textbf{bloqueado}, el botón dice
+                \emph{"Habilitar"} en verde.
+        \end{itemize}
+  \item Aparecerá una ventana de confirmación con el nombre del usuario
+        y la acción que vas a realizar.
+  \item Presiona \textbf{Confirmar} para aplicar el cambio o
+        \textbf{Cancelar} para volver.
+\end{enumerate}
+
+\begin{aviso}
+  Esta acción tiene efecto inmediato. Una vez bloqueado, el usuario
+  no podrá registrar su ingreso en el portal hasta que sea habilitado
+  nuevamente.
+\end{aviso}
+
+\begin{tip}
+  Si el listado tarda en cargar, usa el botón de \textbf{actualizar}
+  que aparece en la esquina superior derecha de esta sección.
+\end{tip}
+
+% ===============================================================
+\section{Sección: Semestre (Carga masiva)}
+\label{sec:semestre}
+% ===============================================================
+
+Al inicio de cada semestre académico, se carga la lista actualizada
+de estudiantes, empleados y contratistas. Esta sección guía el proceso
+paso a paso con un asistente en forma de \emph{stepper} (serie de pasos
+numerados en la parte superior de la pantalla).
+
+\subsection{¿Cuándo usar esta sección?}
+
+\begin{itemize}
+  \item Al inicio de un nuevo semestre académico.
+  \item Cuando llegan nuevas listas de personal (empleados o contratistas).
+  \item Cuando se necesita reemplazar la base de usuarios vigente.
+\end{itemize}
+
+\begin{peligro}
+  La carga de un nuevo semestre \textbf{reemplaza} la lista de usuarios
+  anterior. Los registros de acceso (ingresos históricos) no se borran,
+  pero los usuarios que no aparezcan en los nuevos archivos CSV
+  quedarán sin información de semestre activo.
+\end{peligro}
+
+\subsection{Pasos del proceso}
+
+El asistente tiene 6 pasos. Debes completarlos en orden.
+
+\subsubsection{Paso 1 — Semestre}
+
+Define el período académico que vas a cargar.
+
+\begin{enumerate}
+  \item Si el semestre ya existe en el sistema (aparece en la lista
+        desplegable), selecciónalo.
+  \item Si es un semestre nuevo, escribe el nombre (por ejemplo:
+        \texttt{2026-2}), la fecha de inicio y la fecha de fin.
+  \item Presiona \textbf{Siguiente}.
+\end{enumerate}
+
+\subsubsection{Paso 2 — Usuarios}
+
+Sube el archivo CSV con la lista general de usuarios.
+
+\begin{enumerate}
+  \item Prepara el archivo CSV con el siguiente formato de columnas:
+\end{enumerate}
+
+\begin{lstlisting}
+id_institucional, nombre_completo, acceso
+100002, Ana Torres, activo
+100003, Luis Pérez, activo
+\end{lstlisting}
+
+\begin{itemize}
+  \item \texttt{id\_institucional}: Número de identificación único.
+  \item \texttt{nombre\_completo}: Nombre y apellidos.
+  \item \texttt{acceso}: Puede ser \texttt{activo} o \texttt{bloqueado}.
+\end{itemize}
+
+\begin{enumerate}
+  \setcounter{enumi}{1}
+  \item Haz clic en \textbf{Seleccionar archivo} y elige tu CSV.
+  \item El sistema muestra una vista previa con los datos detectados.
+        Verifica que los nombres de las columnas sean correctos.
+  \item Presiona \textbf{Siguiente}.
+\end{enumerate}
+
+\subsubsection{Paso 3 — Estudiantes}
+
+Sube el CSV con la información académica de los estudiantes.
+
+\begin{lstlisting}
+id_institucional, programa, semestre_num
+100002, Ingeniería de Sistemas, 5
+100003, Contaduría Pública, 3
+\end{lstlisting}
+
+\begin{nota}
+  Solo deben aparecer en este archivo los IDs que también estaban en
+  el CSV del Paso 2 con rol estudiante. Los IDs desconocidos
+  serán ignorados.
+\end{nota}
+
+\subsubsection{Paso 4 — Empleados}
+
+Sube el CSV con la información laboral de los empleados.
+
+\begin{lstlisting}
+id_institucional, cargo, departamento
+200001, Docente, Facultad de Ingeniería
+200002, Coordinador, Bienestar Universitario
+\end{lstlisting}
+
+\subsubsection{Paso 5 — Contratistas}
+
+Sube el CSV con la información de los contratistas externos.
+
+\begin{lstlisting}
+id_institucional, empresa, cargo
+300001, Servicios Generales S.A.S, Operario
+300002, TechSoluciones Ltda, Técnico
+\end{lstlisting}
+
+\subsubsection{Paso 6 — Confirmar}
+
+El sistema muestra un resumen de todos los datos que se van a cargar:
+\begin{itemize}
+  \item Nombre del semestre seleccionado.
+  \item Cantidad de usuarios por archivo.
+  \item Alertas sobre IDs duplicados o datos faltantes.
+\end{itemize}
+
+Si todo está correcto, presiona \textbf{Confirmar y cargar}.
+El sistema procesa los archivos y muestra un mensaje de éxito al terminar.
+
+\begin{tip}
+  Puedes usar los archivos de ejemplo incluidos en la carpeta
+  \texttt{database\textbackslash{}} del sistema como plantilla para
+  preparar tus propios CSV:
+  \begin{itemize}
+    \item \texttt{test\_estudiantes.csv}
+    \item \texttt{test\_empleados.csv}
+    \item \texttt{test\_contratistas.csv}
+    \item \texttt{ejemplo\_carga\_semestral.csv}
+  \end{itemize}
+\end{tip}
+
+% ===============================================================
+\section{Sección: Informes}
+\label{sec:informes}
+% ===============================================================
+
+La sección de Informes permite consultar y exportar reportes de
+acceso filtrando por diferentes períodos de tiempo.
+
+\subsection{Seleccionar el período}
+
+En la parte superior de la sección hay cuatro opciones de período:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{} p{2.5cm} p{9.5cm} @{}}
+  \toprule
+  \textbf{Período} & \textbf{Descripción} \\
+  \midrule
+  Diario    & Registros de un día específico. Por defecto muestra el día de hoy. \\
+  Semanal   & Registros de la semana actual (lunes a hoy). \\
+  Mensual   & Registros del mes actual. \\
+  Semestral & Registros desde el inicio del semestre activo hasta hoy. \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+Para ver períodos anteriores, usa las flechas de navegación que
+aparecen junto al selector de período (por ejemplo, para ver la semana
+pasada o el mes anterior).
+
+\subsection{Tarjetas de resumen del período}
+
+Al seleccionar un período, aparecen tarjetas con:
+\begin{itemize}
+  \item Total de ingresos registrados en el período.
+  \item Cantidad de personas únicas que ingresaron.
+  \item Pico de ingresos (hora o día con más actividad).
+\end{itemize}
+
+\subsection{Gráfica de ingresos}
+
+Debajo de las tarjetas hay una gráfica de barras que muestra la
+distribución temporal de los ingresos:
+\begin{itemize}
+  \item \textbf{Diario}: Barras por hora del día.
+  \item \textbf{Semanal}: Una barra por día de la semana.
+  \item \textbf{Mensual}: Una barra por día del mes.
+  \item \textbf{Semestral}: Una barra por mes.
+\end{itemize}
+
+\subsection{Tabla de registros}
+
+Bajo la gráfica aparece la tabla detallada con todos los registros
+del período seleccionado. Cada fila muestra:
+\begin{itemize}
+  \item Nombre e ID del usuario.
+  \item Rol (estudiante, empleado, contratista).
+  \item Fecha y hora exacta del ingreso.
+\end{itemize}
+
+\subsection{Exportar a Excel}
+
+Para exportar los datos del período actual a un archivo Excel:
+
+\begin{enumerate}
+  \item Asegúrate de tener seleccionado el período que deseas exportar.
+  \item Presiona el botón \textbf{Exportar Excel} (ícono de descarga).
+  \item El navegador descargará automáticamente un archivo
+        \texttt{.xlsx} con todos los registros visibles en pantalla.
+\end{enumerate}
+
+\begin{tip}
+  El archivo Excel exportado se puede abrir directamente en
+  Microsoft Excel, Google Sheets o LibreOffice Calc. Las columnas
+  ya vienen con los encabezados en español.
+\end{tip}
+
+% ===============================================================
+\section{Sección: Administradores}
+\label{sec:admins}
+% ===============================================================
+
+\begin{nota}
+  Esta sección solo es visible para usuarios con nivel
+  \textbf{Superadmin}. Los administradores regulares no pueden
+  acceder a ella.
+\end{nota}
+
+Esta sección permite gestionar las cuentas de acceso al panel de
+administración. Desde aquí puedes crear nuevos administradores y
+eliminar los existentes.
+
+\subsection{Listado de administradores}
+
+Muestra una tabla con todos los administradores registrados:
+\begin{itemize}
+  \item Nombre completo.
+  \item ID institucional.
+  \item Nivel (\textbf{Superadmin} en color dorado, \textbf{Admin} en azul).
+  \item Fecha de creación.
+  \item Fecha del último ingreso al panel.
+\end{itemize}
+
+\subsection{Crear un nuevo administrador}
+
+\begin{enumerate}
+  \item Haz clic en el botón \textbf{Nuevo administrador}.
+  \item Se abre un formulario. Completa los campos:
+    \begin{itemize}
+      \item \textbf{ID institucional}: El número de identificación que
+            usará para iniciar sesión.
+      \item \textbf{Nombre completo}: Nombre y apellidos.
+      \item \textbf{Nivel}: Elige \emph{Admin} o \emph{Superadmin}.
+      \item \textbf{Contraseña}: Mínimo 8 caracteres.
+      \item \textbf{Confirmar contraseña}: Debe coincidir con la anterior.
+    \end{itemize}
+  \item Presiona \textbf{Crear administrador}.
+\end{enumerate}
+
+\begin{aviso}
+  Asigna el nivel \textbf{Superadmin} solo a personas de total confianza,
+  ya que tendrán la capacidad de crear y eliminar otros administradores,
+  incluyendo tu propia cuenta.
+\end{aviso}
+
+\subsection{Eliminar un administrador}
+
+\begin{enumerate}
+  \item Ubica al administrador en el listado.
+  \item Presiona el ícono de eliminar (papelera) en su fila.
+  \item Confirma la acción en la ventana emergente.
+\end{enumerate}
+
+\begin{peligro}
+  No es posible eliminar la propia cuenta con la que estás iniciado
+  sesión. Tampoco se puede dejar el sistema sin ningún superadmin.
+\end{peligro}
+
+\subsection{Cambiar la contraseña}
+
+Actualmente el cambio de contraseña de un administrador se realiza
+eliminando la cuenta y creándola nuevamente con la nueva contraseña.
+Anota siempre las credenciales en un lugar seguro.
+
+% ===============================================================
+\section{Cerrar sesión}
+% ===============================================================
+
+Para cerrar sesión de forma segura:
+
+\begin{enumerate}
+  \item En la barra lateral, desplázate hasta el final.
+  \item Presiona el botón \textbf{Cerrar sesión} (ícono de salida).
+  \item El sistema te redirige automáticamente a la pantalla de login.
+\end{enumerate}
+
+\begin{aviso}
+  Si cierras la pestaña del navegador sin cerrar sesión, tu sesión
+  permanece activa. Cualquier persona que abra el panel desde ese mismo
+  navegador podría acceder sin contraseña. Siempre cierra sesión cuando
+  termines de trabajar, especialmente en equipos compartidos.
+\end{aviso}
+
+% ===============================================================
+\section{Preguntas frecuentes}
+% ===============================================================
+
+\subsection*{¿El sistema funciona desde el celular?}
+
+Sí. Tanto el portal de usuario como el panel de administración están
+optimizados para funcionar en cualquier dispositivo (celular, tableta
+o computador) siempre que esté conectado a la red WiFi del campus.
+
+\subsection*{¿Qué pasa si el sistema no carga en el celular?}
+
+Verifica que el celular esté conectado al WiFi del campus (no a datos
+móviles). Si estás conectado al WiFi y no carga, el sistema puede
+estar apagado: avisa al personal responsable de encenderlo.
+
+\subsection*{¿Puedo usar el sistema desde fuera del campus?}
+
+No. El sistema solo funciona dentro de la red WiFi institucional del
+campus. No es accesible desde internet.
+
+\subsection*{¿Por qué mi usuario aparece como bloqueado?}
+
+El bloqueo puede deberse a una situación disciplinaria (reporte TIP)
+o a una restricción administrativa. Debes contactar directamente a la
+oficina encargada para conocer el motivo y solicitar la habilitación.
+
+\subsection*{¿Puedo registrar mi ingreso varias veces en el mismo día?}
+
+Sí. El sistema registra cada escaneo como un ingreso independiente.
+Esto permite llevar un historial completo de entradas.
+
+\subsection*{¿Los datos del semestre anterior se borran al cargar el nuevo?}
+
+Los registros históricos de ingresos \textbf{no se borran}. Lo que
+cambia es la lista de usuarios activos y su información académica o
+laboral. El historial de accesos queda disponible en la sección de
+Informes.
+
+\subsection*{¿Qué es un reporte TIP?}
+
+TIP (Tratamiento Institucional de Problemáticas) es el sistema
+disciplinario de la universidad. Un reporte TIP registra una situación
+que puede afectar el acceso del usuario. El Reglamento TIP se puede
+descargar desde el portal de usuario.
+
+% ===============================================================
+\section{Glosario}
+% ===============================================================
+
+\begin{description}[leftmargin=3.5cm, labelwidth=3cm, style=nextline]
+  \item[ID institucional] Número único que la universidad asigna a cada
+    estudiante, empleado o contratista al momento de su vinculación.
+  \item[Portal de usuario] Interfaz web accesible mediante código QR,
+    usada para registrar ingresos.
+  \item[Panel de administración] Interfaz web exclusiva para
+    administradores del sistema.
+  \item[Semestre activo] Período académico vigente configurado en el sistema.
+  \item[Rol] Categoría del usuario: estudiante, empleado o contratista.
+  \item[Estado] Condición de acceso del usuario: activo (puede ingresar)
+    o bloqueado (no puede ingresar).
+  \item[Reporte TIP] Registro disciplinario vinculado a un usuario.
+  \item[CSV] Formato de archivo de texto separado por comas, usado para
+    cargar listas masivas de usuarios. Se puede crear y editar con Excel.
+  \item[Excel (.xlsx)] Formato de archivo de hoja de cálculo de Microsoft,
+    generado al exportar los informes.
+  \item[Superadmin] Nivel máximo de administrador, con permisos para
+    gestionar otros administradores.
+  \item[Admin] Nivel estándar de administrador, sin acceso a la gestión
+    de otros administradores.
+\end{description}
+
+% ===============================================================
+\vspace{2cm}
+\begin{center}
+  {\color{uccazul}\rule{0.5\textwidth}{0.5pt}}\\[0.5em]
+  {\small\color{uccgris}
+    Sistema de Control de Acceso UCC — Manual de Uso v1.0 \\
+    Corporación Universitaria Comfacauca, 2026
+  }
+\end{center}
+
+\end{document}
